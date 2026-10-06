@@ -32,3 +32,17 @@ final testEmulatedFlavorConfig = FlavorConfig(
   strictConfiguration: false,
   emulators: const EmulatorConfig(authPort: 9099, firestorePort: 8085),
 );
+
+/// [testEmulatedFlavorConfig] that also starts a demo session.
+final testDemoFlavorConfig = FlavorConfig(
+  flavor: testFlavorConfig.flavor,
+  appName: testFlavorConfig.appName,
+  firebaseOptions: testFlavorConfig.firebaseOptions,
+  googleServerClientId: testFlavorConfig.googleServerClientId,
+  deepLinkHost: testFlavorConfig.deepLinkHost,
+  verboseLogging: false,
+  analyticsEnabled: false,
+  strictConfiguration: false,
+  emulators: const EmulatorConfig(authPort: 9099, firestorePort: 8085),
+  demoSession: true,
+);
