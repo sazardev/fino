@@ -63,7 +63,7 @@ Los destinos primarios viven en la **barra de navegación inferior**
 | Estado | Cada destino conserva su estado (scroll, formulario a medias) al cambiar: `IndexedStack`, no se reconstruye |
 | Transición | Fade + escala 0.96 → 1 (`AppCurves.gentle`, `AppDurations.medium`), igual que `appPageRoute` |
 | Tocar un destino | Siempre aterriza en su **raíz**: las subpantallas que quedaron abiertas se cierran (Ajustes → Apariencia → Inicio → Ajustes muestra Ajustes, sin botón de volver). La raíz conserva su estado (scroll, formulario). Reseleccionar el activo hace lo mismo. *Subir al inicio del scroll: pendiente* |
-| Acción primaria | **Una sola** por pantalla: FAB plano (píldora `primary`/`onPrimary`, `elevation 0`, `BouncyTap`), flotando sobre la barra, alineado al final. En rail va en su slot `leading` |
+| Acción primaria | **Una sola** por pantalla: FAB plano (círculo `primary`/`onPrimary`, `elevation 0`, `BouncyTap`), **solo ícono** (círculo, tooltip con la etiqueta) en todos los anchos, flotando abajo al final de la columna de contenido, sobre la barra si la hay. Nunca dentro del rail |
 | Subpantallas | Cada destino tiene su **propia pila de navegación** (`DestinationNavigator`): un detalle se abre *dentro* del destino y la navegación permanece visible; el gesto atrás del sistema cierra primero esa pila. Formularios de captura: pantalla completa sobre la navegación (no compiten con el teclado) |
 
 ### 0.3 Responsive siempre: móvil · tablet · web
@@ -99,7 +99,8 @@ Implementación (un archivo por cosa):
 | --- | --- |
 | `ui/templates/navigation/app_destination.dart` | modelo: ícono + etiqueta |
 | `.../app_bottom_bar.dart` | `NavigationBar` (compact, watch sin etiquetas) |
-| `.../app_side_rail.dart` | `NavigationRail` compacto ↔ extendido, con slot `leading` para el FAB |
+| `.../app_side_rail.dart` | `NavigationRail` compacto ↔ extendido |
+| `.../app_fab_slot.dart` | flota el FAB abajo, al final de la columna de contenido, con entrada/salida de escala + fade |
 | `.../app_navigation_shell.dart` | elige barra o rail con `Responsive.usesSideNavigation`; recibe `destinations`, `pages`, `index`, `onSelect`, `onReselect`, `fab` |
 | `ui/organisms/fade_scale_indexed_stack.dart` | muestra una página (fade + escala) y mantiene vivas las demás |
 | `app/shell/destination_navigator.dart` | pila de navegación propia por destino + gesto atrás |
@@ -329,9 +330,10 @@ No existe. Ver §0.1. Su lugar lo toman tres piezas pequeñas:
   contenido.
 - **`ScreenTitle`** — título *de contenido* (`headlineSmall` w700): primer
   elemento del scroll, solo cuando aporta (§0.1).
-- **`AppFab`** — la acción primaria: píldora `primary` plana, `BouncyTap` 0.94,
-  háptico `confirm`. Muestra su etiqueta solo en `expanded`; en el resto,
-  solo el ícono con tooltip.
+- **`AppFab`** — la acción primaria: círculo `primary` plano de 56 dp (tope de
+  escala 1.1 para no engordar en tablet/web), `BouncyTap`, háptico
+  `confirm`. Siempre solo ícono; la etiqueta es tooltip y texto para lectores
+  de pantalla.
 
 ### Secciones contraíbles (`CollapsibleSection`)
 Tarjeta `surfaceContainer` (radio `lg`) con encabezado — `IconBadge`, título,
@@ -387,18 +389,29 @@ subpantalla, lleva el botón de volver flotante. Mientras `loaded == false`, un
 master-detail (lista a la izquierda, detalle a la derecha con
 `AnimatedSwitcher`, `AppDurations.medium`).
 
+### Ícono de la app
+El ícono **es la "F" del splash** terminada (`FinoMarkPainter` en progreso 1),
+en blanco sobre el color del flavor (esmeralda en `prod`). En Android va dentro
+de la zona segura del ícono adaptativo (46 % del lienzo) y hay versión
+monocromática para íconos temáticos; el de notificaciones es la misma F
+engrosada. Se regenera con `tool/gen_icons.sh`; nunca se edita a mano.
+
 ### Splash animado
-~2.6 s, tap para saltar: la marca es una **"F" caligráfica de pluma
-puntiaguda** que se **escribe a sí misma** con un `CustomPainter`
-(`FinoMarkPainter`). Cada trazo se pre-muestrea una vez y su grosor sigue la
-presión de la pluma: hairline (0.7) al subir o ir de lado, se ensancha (4.2) al
-bajar, con entradas y salidas afiladas. Guion: remate superior
+~1.5 s, tap para saltar, **solo la marca** (sin nombre): fondo `primary` y una
+**"F" entintada a mano** en `onPrimary` que ocupa ~72 % del lado corto
+(120–520 dp) y se **escribe a sí misma** (`FinoMarkPainter`). El grosor sigue
+la presión del pincel: 3.2 al subir o ir de lado, 12.5 al bajar; el pincel se
+posa suave y se levanta con algo de tinta. Guion: remate superior
 (`easeInOutSine`) → levantada → fuste con rizo (`easeInOutCubic`) → gota de
-tinta al final del rizo (`AppCurves.bouncy`) → travesaño. Una copia difusa al
-18 % debajo simula tinta sobre papel. Luego el nombre (w400, tracking 10) sube
-10 dp con fade (`Interval 0.66–0.92`). Cierra con
-`pushReplacement(appPageRoute(...))`. Con animaciones reducidas muestra el
-logo final. La tinta sigue el acento (`primary`).
+tinta al final del rizo (`AppCurves.bouncy`) → travesaño → pausa breve
+(último 15 %). Con animaciones reducidas solo se muestra esa pausa con el logo
+terminado.
+
+Rendimiento (60 fps): el painter escucha la animación con `repaint:` (no
+reconstruye widgets). Cada trazo se pre-muestrea una vez
+(`FinoMarkPainter.warmUp()` en `initState`) y sus muestras se agrupan por
+grosor; un fotograma es un `drawRawPoints` redondo por grupo, sin crear
+objetos, sin blur y sin contornos que se plieguen en los rizos.
 
 ### Onboarding
 Wizard de pasos donde **cada elección se aplica en vivo** (idioma, tema, acento,
@@ -463,22 +476,26 @@ ajuste. Usar `AppSwitch`, no `Switch`.
 
 ---
 
-## 9. Mapa de Fino sobre el sistema (propuesta de UI)
+## 9. Mapa de Fino sobre el sistema
 
-Solo para orientar el uso de componentes; la funcionalidad se define aparte.
-Destinos de ejemplo (3–5, una palabra): **Inicio · Deudores · Historial ·
-Ajustes**. Ninguna pantalla lleva AppBar.
+La funcionalidad la define `SPEC.md`. Cuatro destinos, una palabra cada uno:
+**Inicio · Pedidos · Buzón · Ajustes** (Buzón lleva el número de avisos sin
+leer). Ninguna pantalla lleva AppBar. El FAB "Nuevo pedido" solo vive en Inicio
+y Pedidos, y solo si hay equipo.
 
-| Pantalla | Componentes del sistema |
-| --- | --- |
-| Inicio | Resumen grande y centrado dentro de la columna; sin título (la barra ya dice "Inicio"); FAB plano "nuevo movimiento" |
-| Deudores | Lista de filas estilo `SettingsNavTile`: badge circular con inicial, nombre `bodyLarge`, subtítulo (último movimiento), monto `w700` con cifras tabulares; `BouncyTap` 0.98; entrada escalonada con `PopIn`. En `expanded`: master-detail (lista + detalle) |
-| Detalle de deudor | Botón de volver flotante; el **nombre de la persona** como título en el scroll (aporta información); tarjetas `lg`; movimientos con `SettingsRow` |
-| Agregar / editar | Pantalla completa sin navegación; título en el scroll; campos con el `InputDecorationTheme` del tema, stepper ± para montos, chips `SelectableCard`; guardar como acción primaria |
-| Eliminar / borrar todo | `ConfirmActionRow` (sin diálogo) |
-| Ajustes | Lista de `SettingsNavTile`: Apariencia, Idioma, Vibración, Datos. Sin título "Ajustes" repetido |
-| Estado vacío | `ChubbyIcon` grande + texto; el ícono entra con `PopIn` |
-| Carga | `CircularProgressIndicator` centrado (único spinner del sistema) |
+| Pantalla | Ruta | Componentes del sistema |
+| --- | --- | --- |
+| Inicio (saldo) | `/` | `BalanceCard` (me deben / debo), cola "Por confirmar" (`ConfirmQueueTile`), personas con `PersonTile` + `AmountText` con signo; vacío: `EmptyState` "Empieza con tu equipo" |
+| Cuenta con alguien | `/cuentas/:team/:user` | Volver flotante; nombre como título; deudas en ambos sentidos; `AppButton` Pagar / Confirmar todo / Recordar |
+| Pedidos | `/pedidos` | `ListShell` con `SearchField` + filtros `ChoicePillRow` (estado, "Solo míos" y equipo si hay varios); `OrderTile` con `PopIn` |
+| Detalle del pedido | `/pedidos/:id` | Una tarjeta por deuda con sus acciones en línea (`ConfirmActionRow`, `InlineEditor`); bitácora; acciones del dueño |
+| Pago reportado | `/pagos/:id` (en Pedidos) | Qué cubre, a qué cuenta, referencia; confirmar o rechazar en bloque |
+| Buzón | `/buzon` | Filas con punto de no leído; tocar marca leído y lleva al objetivo; deslizar borra |
+| Ajustes | `/ajustes` | Perfil, equipos (detalle, crear, entrar con código), preferencias; sin título repetido |
+| Detalle de equipo | `/ajustes/equipos/:id` | Código de invitación (`CopyValueTile`), miembros, mi cuenta de cobro, acciones de admin y salida con `ConfirmActionRow` |
+| Formularios | `/nuevo-pedido`, `/editar-pedido/:id`, `/agregar-a-pedido/:id`, `/pagar/:team/:user`, `/nuevo-equipo`, `/unirse`, `/cuenta-de-cobro/:team`, `/nuevo-aviso/:team` | Pantalla completa sin navegación; título en el scroll; acción primaria `AppButton` |
+| Eliminar / cancelar | — | `ConfirmActionRow` (sin diálogo); resultado con `AppToast` |
+| Carga | — | `CircularProgressIndicator` centrado (único spinner del sistema) |
 
 ---
 
