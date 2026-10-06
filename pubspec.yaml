@@ -45,6 +45,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/changelog.json
+
   fonts:
     - family: Geist
       fonts:

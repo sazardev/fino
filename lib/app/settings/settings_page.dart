@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/auth/presentation/widgets/sign_out_row.dart';
+import '../../features/changelog/presentation/widgets/changelog_nav_tile.dart';
 import '../../ui/atoms/app_switch.dart';
 import '../../ui/molecules/settings_nav_tile.dart';
 import '../../ui/molecules/settings_row.dart';
@@ -23,6 +24,9 @@ class SettingsPage extends StatelessWidget {
           title: 'Apariencia',
           subtitle: 'Tema, color y tamaño',
           onTap: () => const AppearanceRoute().push<void>(context),
+        ),
+        ChangelogNavTile(
+          onTap: () => const ChangelogRoute().push<void>(context),
         ),
         ValueListenableBuilder<bool>(
           valueListenable: haptics,

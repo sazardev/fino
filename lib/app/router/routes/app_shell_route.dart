@@ -13,7 +13,10 @@ part of '../app_routes.dart';
       routes: [
         TypedGoRoute<SettingsRoute>(
           path: '/ajustes',
-          routes: [TypedGoRoute<AppearanceRoute>(path: 'apariencia')],
+          routes: [
+            TypedGoRoute<AppearanceRoute>(path: 'apariencia'),
+            TypedGoRoute<ChangelogRoute>(path: 'novedades'),
+          ],
         ),
       ],
     ),

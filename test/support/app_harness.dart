@@ -2,6 +2,7 @@ import 'package:fino/app/fino_app.dart';
 import 'package:fino/app/settings/app_settings.dart';
 import 'package:fino/app/splash/splash_screen.dart';
 import 'package:fino/features/auth/domain/auth_repository.dart';
+import 'package:fino/features/changelog/domain/changelog_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +21,7 @@ Future<AppSettings> pumpFino(
   Map<String, Object> stored = const {},
   AuthRepository? auth,
   RecordingAnalyticsService? analytics,
+  ChangelogRepository? changelog,
   String? initialLocation,
 }) async {
   SharedPreferences.setMockInitialValues(stored);
@@ -43,6 +45,7 @@ Future<AppSettings> pumpFino(
         settings: settings,
         auth: auth,
         analytics: analytics,
+        changelog: changelog,
       ),
       child: const FinoApp(),
     ),

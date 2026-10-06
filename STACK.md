@@ -229,6 +229,9 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - Release: **App Bundle (`.aab`)**, R8/minify + shrinkResources activos, ofuscación (`--obfuscate --split-debug-info`) con símbolos archivados.
 - Firma por `key.properties` **fuera del repo**. `minSdk`/`targetSdk` explícitos en un solo lugar.
 - Versionado semántico en `pubspec.yaml` (`x.y.z+build`); el build number sube en cada release.
+- **Releases y changelog automáticos**, desde los commits: `dart run tool/bump_version.dart <major|minor|patch> [--dry-run]`. Lee los Conventional Commits (`feat`, `fix`, `perf`…) desde el último tag `v*`, sube la versión de `pubspec.yaml`, regenera `CHANGELOG.md` y `assets/changelog.json` (lo que muestra Ajustes → Novedades), y crea el commit `chore(release): vX.Y.Z` con su tag. Con `--dry-run` solo muestra lo que saldría.
+  - Los archivos del release **no se editan a mano**. Un commit que no siga `tipo(alcance): asunto` no aparece en el changelog: escribe los asuntos pensando en quien lee las novedades (`feat` → Novedades, `fix` → Correcciones, `perf` → Mejoras; el resto solo en `CHANGELOG.md`). `tipo!:` marca un cambio incompatible: sube `major`.
+  - Exige árbol limpio; el commit pasa por el pre-commit de siempre y, si falla, no deja nada a medias.
 - Permisos de Android: solo los estrictamente necesarios.
 - Tamaño de la app vigilado: sin assets ni dependencias sin uso; `flutter build appbundle --analyze-size` en revisiones de release.
 
