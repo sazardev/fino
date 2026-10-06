@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 /// Soft tinted halo behind [child] while it has keyboard / D-pad focus. Flat
 /// like the rest of the system: no border, no shadow.
 class FocusHalo extends StatelessWidget {
-  const FocusHalo({
-    super.key,
+  const new({
     required this.visible,
     required this.borderRadius,
     required this.child,
+    super.key,
   });
 
   final bool visible;

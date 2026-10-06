@@ -12,9 +12,9 @@ import 'icon_pop.dart';
 /// Plain [Icon]s are drawn plump (see [ChubbyIcon]). On tap, and whenever
 /// [selected] flips, the icon pops with a small wobble.
 class AppIconButton extends StatefulWidget {
-  const AppIconButton({
-    super.key,
+  const new({
     required this.icon,
+    super.key,
     this.onPressed,
     this.tooltip,
     this.selected = false,
@@ -92,6 +92,6 @@ class _AppIconButtonState extends State<AppIconButton> {
     );
 
     if (widget.tooltip == null) return button;
-    return Tooltip(message: widget.tooltip!, child: button);
+    return Tooltip(message: widget.tooltip, child: button);
   }
 }

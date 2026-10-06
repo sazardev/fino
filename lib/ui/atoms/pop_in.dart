@@ -9,9 +9,9 @@ import '../design/app_curves.dart';
 /// and a slight twist, after an optional [delay]. Stagger a row of these by
 /// giving each a larger delay. Skipped when animations are off.
 class PopIn extends StatefulWidget {
-  const PopIn({
-    super.key,
+  const new({
     required this.child,
+    super.key,
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 560),
   });

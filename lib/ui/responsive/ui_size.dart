@@ -2,11 +2,11 @@
 /// content widths.
 enum UiSize {
   small(0.9),
-  normal(1.0),
+  normal(1),
   large(1.25),
   extraLarge(1.5);
 
-  const UiSize(this.multiplier);
+  new(this.multiplier);
 
   final double multiplier;
 }

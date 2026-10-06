@@ -4,14 +4,14 @@ import '../design/app_spacing.dart';
 
 /// Labeled slider over a gradient track (functional: it previews the value).
 class GradientSlider extends StatelessWidget {
-  const GradientSlider({
-    super.key,
+  const new({
     required this.label,
     required this.value,
     required this.max,
     required this.colors,
     required this.thumbColor,
     required this.onChanged,
+    super.key,
   });
 
   final String label;

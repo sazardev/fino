@@ -8,11 +8,11 @@ import 'bouncy_tap.dart';
 /// One selectable color circle. Fixed size by design: it must never stretch
 /// to fill a grid cell. Selection morphs the circle into a squircle (+ check).
 class AccentSwatch extends StatelessWidget {
-  const AccentSwatch({
-    super.key,
+  const new({
     required this.color,
     required this.selected,
     required this.onTap,
+    super.key,
     this.size = 52,
     this.icon,
   });

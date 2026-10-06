@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import '../tool/src/generated_files.dart';
+
 /// DESIGN.md §0 and §1 as executable rules: these never appear in `lib/`.
 void main() {
   final forbidden = {
@@ -20,7 +22,7 @@ void main() {
   final files = Directory('lib')
       .listSync(recursive: true)
       .whereType<File>()
-      .where((f) => f.path.endsWith('.dart'));
+      .where((f) => f.path.endsWith('.dart') && !isGeneratedFile(f.path));
 
   test('lib/ follows the design rules', () {
     final violations = <String>[];

@@ -13,9 +13,9 @@ import '../responsive/responsive.dart';
 /// gets a floating back button. The content stays in a readable column that
 /// grows with the screen (phone → tablet → web) and tightens on watches.
 class SettingsShell extends StatelessWidget {
-  const SettingsShell({
-    super.key,
+  const new({
     required this.children,
+    super.key,
     this.title,
     this.loaded = true,
     this.wide = false,

@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../features/auth/presentation/widgets/sign_out_row.dart';
 import '../../ui/atoms/app_switch.dart';
 import '../../ui/molecules/settings_nav_tile.dart';
 import '../../ui/molecules/settings_row.dart';
-import '../../ui/navigation/app_page_route.dart';
 import '../../ui/templates/settings_shell.dart';
-import 'appearance_page.dart';
+import '../router/app_routes.dart';
 import 'settings_scope.dart';
 
 /// Settings hub: one tile per settings screen.
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  void _open(BuildContext context, Widget page) =>
-      Navigator.of(context).push(appPageRoute((_) => page));
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class SettingsPage extends StatelessWidget {
           icon: Icons.palette_rounded,
           title: 'Apariencia',
           subtitle: 'Tema, color y tamaño',
-          onTap: () => _open(context, const AppearancePage()),
+          onTap: () => const AppearanceRoute().push<void>(context),
         ),
         ValueListenableBuilder<bool>(
           valueListenable: haptics,
@@ -35,6 +32,7 @@ class SettingsPage extends StatelessWidget {
             trailing: AppSwitch(value: enabled, onChanged: haptics.update),
           ),
         ),
+        const SignOutRow(),
       ],
     );
   }

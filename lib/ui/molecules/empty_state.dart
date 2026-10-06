@@ -6,12 +6,7 @@ import '../design/app_spacing.dart';
 
 /// Big plump icon (that pops in) with a title and a hint.
 class EmptyState extends StatelessWidget {
-  const EmptyState({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.hint,
-  });
+  const new({required this.icon, required this.title, super.key, this.hint});
 
   final IconData icon;
   final String title;

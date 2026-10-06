@@ -1,6 +1,6 @@
 /// Shared spacing scale.
 abstract final class AppSpacing {
-  const AppSpacing._();
+  const new _();
 
   static const double xs = 4;
   static const double sm = 8;

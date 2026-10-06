@@ -5,11 +5,11 @@ import '../../core/haptics/haptics.dart';
 /// Flat single-choice segmented control: tonal fills instead of an outline.
 /// [segments] pairs each value with its label.
 class FlatSegmentedButton<T> extends StatelessWidget {
-  const FlatSegmentedButton({
-    super.key,
+  const new({
     required this.segments,
     required this.selected,
     required this.onChanged,
+    super.key,
   });
 
   final List<(T value, String label)> segments;

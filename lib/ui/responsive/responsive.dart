@@ -11,25 +11,7 @@ import 'ui_size_scope.dart';
 /// Read with [Responsive.of]; it rebuilds the caller when the window size or
 /// the user's [UiSize] changes.
 class Responsive {
-  const Responsive._({
-    required this.size,
-    required this.factor,
-    required this.scale,
-  });
-
-  final Size size;
-  final FormFactor factor;
-
-  /// Multiplier for text, icons and content widths.
-  final double scale;
-
-  /// Below this shortest side the screen is treated as a watch.
-  static const double watchShortestSide = 260;
-
-  static Responsive of(BuildContext context) =>
-      fromSize(MediaQuery.sizeOf(context), uiSize: UiSizeScope.of(context));
-
-  static Responsive fromSize(Size size, {UiSize uiSize = UiSize.normal}) {
+  factory fromSize(Size size, {UiSize uiSize = UiSize.normal}) {
     final shortest = size.shortestSide;
     final FormFactor factor;
     if (shortest < watchShortestSide) {
@@ -45,13 +27,28 @@ class Responsive {
     // Phones stay at 1.0; bigger screens grow gently up to 1.5.
     final base = factor == FormFactor.watch
         ? 1.0
-        : (shortest / 480).clamp(1.0, 1.5).toDouble();
+        : (shortest / 480).clamp(1.0, 1.5);
     return Responsive._(
       size: size,
       factor: factor,
       scale: base * uiSize.multiplier,
     );
   }
+  factory of(BuildContext context) => Responsive.fromSize(
+    MediaQuery.sizeOf(context),
+    uiSize: UiSizeScope.of(context),
+  );
+
+  const new _({required this.size, required this.factor, required this.scale});
+
+  final Size size;
+  final FormFactor factor;
+
+  /// Multiplier for text, icons and content widths.
+  final double scale;
+
+  /// Below this shortest side the screen is treated as a watch.
+  static const double watchShortestSide = 260;
 
   bool get isWatch => factor == FormFactor.watch;
   bool get isLandscape => size.width > size.height;

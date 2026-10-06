@@ -2,7 +2,7 @@ import 'value_codec.dart';
 
 /// Stores an enum by name.
 class EnumCodec<T extends Enum> implements ValueCodec<T> {
-  const EnumCodec(this.values);
+  const new(this.values);
 
   final List<T> values;
 

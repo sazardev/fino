@@ -13,11 +13,11 @@ import '../responsive/responsive.dart';
 /// The screen's one primary action: a flat `primary` pill (no shadow). Shows
 /// its label on wide screens, only the icon otherwise.
 class AppFab extends StatelessWidget {
-  const AppFab({
-    super.key,
+  const new({
     required this.icon,
     required this.label,
     required this.onPressed,
+    super.key,
   });
 
   final IconData icon;
@@ -28,7 +28,7 @@ class AppFab extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final r = Responsive.of(context);
-    final double height = 56 * math.min(r.scale, 1.25);
+    final height = 56.0 * math.min(r.scale, 1.25);
 
     return Tooltip(
       message: label,

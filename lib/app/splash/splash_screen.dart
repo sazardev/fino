@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/utils/reduced_motion.dart';
 import '../../ui/brand/fino_mark.dart';
-import '../../ui/navigation/app_page_route.dart';
 import '../../ui/responsive/responsive.dart';
 
-/// Cold-start splash: the logo builds itself, the wordmark settles in beneath
-/// it, then the app fades in. Tap to skip.
+/// Cold-start splash: on an accent background the "F" writes itself in white
+/// ink, holds for a beat, then the app fades in. Tap to skip.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key, required this.next});
+  const new({required this.onFinished, super.key});
 
-  /// The screen to show afterwards.
-  final Widget next;
+  /// Called once, when the splash ends or is skipped.
+  final VoidCallback onFinished;
 
-  static const duration = Duration(milliseconds: 1900);
+  static const duration = Duration(milliseconds: 1500);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -25,13 +25,10 @@ class _SplashScreenState extends State<SplashScreen>
     vsync: this,
     duration: SplashScreen.duration,
   );
+  // The rest of the timeline is a short hold on the finished letter.
   late final Animation<double> _mark = CurvedAnimation(
     parent: _c,
-    curve: const Interval(0.0, 0.68),
-  );
-  late final Animation<double> _word = CurvedAnimation(
-    parent: _c,
-    curve: const Interval(0.55, 0.85, curve: Curves.easeOutCubic),
+    curve: const Interval(0, 0.85),
   );
   bool _left = false;
 
@@ -55,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _leave() {
     if (_left || !mounted) return;
     _left = true;
-    Navigator.of(context).pushReplacement(appPageRoute((_) => widget.next));
+    widget.onFinished();
   }
 
   @override
@@ -66,40 +63,29 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = (Responsive.of(context).size.shortestSide * 0.34).clamp(
-      72.0,
-      220.0,
+    final scheme = Theme.of(context).colorScheme;
+    final size = (Responsive.of(context).size.shortestSide * 0.72).clamp(
+      120.0,
+      520.0,
     );
+    final overlay =
+        ThemeData.estimateBrightnessForColor(scheme.primary) == Brightness.dark
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _leave,
-      child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FinoMark(progress: _mark, size: size),
-              SizedBox(height: size * 0.22),
-              AnimatedBuilder(
-                animation: _word,
-                builder: (context, child) => Opacity(
-                  opacity: _word.value,
-                  child: Transform.translate(
-                    offset: Offset(0, 10 * (1 - _word.value)),
-                    child: child,
-                  ),
-                ),
-                child: Text(
-                  'fino',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 8,
-                    fontSize: (size * 0.2).clamp(18.0, 40.0),
-                  ),
-                ),
-              ),
-            ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlay,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _leave,
+        child: Scaffold(
+          backgroundColor: scheme.primary,
+          body: Center(
+            child: FinoMark(
+              progress: _mark,
+              size: size,
+              color: scheme.onPrimary,
+            ),
           ),
         ),
       ),

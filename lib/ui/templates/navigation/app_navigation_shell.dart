@@ -14,15 +14,15 @@ import 'app_side_rail.dart';
 /// switches *and* across the bar ↔ rail change (resizing a web window or
 /// rotating a tablet loses nothing).
 class AppNavigationShell extends StatefulWidget {
-  const AppNavigationShell({
-    super.key,
+  const new({
     required this.destinations,
     required this.pages,
     required this.index,
     required this.onSelect,
+    super.key,
     this.onReselect,
     this.fab,
-  }) : assert(destinations.length == pages.length);
+  }) : assert(destinations.length == pages.length, 'one page per destination');
 
   final List<AppDestination> destinations;
 
@@ -44,7 +44,7 @@ class AppNavigationShell extends StatefulWidget {
 
 class _AppNavigationShellState extends State<AppNavigationShell> {
   // Keeps the pages' state when they move between the bar and rail layouts.
-  final _pagesKey = GlobalKey();
+  final GlobalKey<State<StatefulWidget>> _pagesKey = GlobalKey();
 
   void _select(int i) {
     if (i == widget.index) {

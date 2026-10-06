@@ -11,12 +11,12 @@ import '../responsive/responsive.dart';
 /// current value, and a chevron. On a watch it collapses to icon + title.
 /// [selected] fills it with the accent.
 class SettingsNavTile extends StatelessWidget {
-  const SettingsNavTile({
-    super.key,
+  const new({
     required this.icon,
     required this.title,
-    this.subtitle,
     required this.onTap,
+    super.key,
+    this.subtitle,
     this.selected = false,
   });
 

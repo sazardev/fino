@@ -7,11 +7,7 @@ import 'hex_field.dart';
 /// Inline custom-color picker (no dialog): hue / saturation / brightness
 /// sliders plus a hex field. Reports every change.
 class ColorPickerPanel extends StatefulWidget {
-  const ColorPickerPanel({
-    super.key,
-    required this.color,
-    required this.onChanged,
-  });
+  const new({required this.color, required this.onChanged, super.key});
 
   final Color color;
   final ValueChanged<Color> onChanged;

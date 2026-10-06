@@ -7,9 +7,9 @@ Future<void> goTo(WidgetTester tester, IconData icon) async {
   await tester.pumpAndSettle();
 }
 
-const homeIcon = Icons.home_rounded;
-const galleryIcon = Icons.widgets_rounded;
-const settingsIcon = Icons.tune_rounded;
+const IconData homeIcon = Icons.home_rounded;
+const IconData galleryIcon = Icons.widgets_rounded;
+const IconData settingsIcon = Icons.tune_rounded;
 
 Future<void> resizeTo(WidgetTester tester, Size size) async {
   tester.view.physicalSize = size;

@@ -5,7 +5,7 @@ import '../../../ui/molecules/empty_state.dart';
 import '../../../ui/molecules/section_header.dart';
 
 class FeedbackSection extends StatelessWidget {
-  const FeedbackSection({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

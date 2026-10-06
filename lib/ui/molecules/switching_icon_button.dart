@@ -8,13 +8,13 @@ import '../design/app_durations.dart';
 /// An icon button whose icon swaps with a spin-and-scale when [active]
 /// flips, and whose circle fills while active (play ↔ pause, add ↔ done).
 class SwitchingIconButton extends StatelessWidget {
-  const SwitchingIconButton({
-    super.key,
+  const new({
     required this.active,
     required this.activeIcon,
     required this.inactiveIcon,
     required this.tooltip,
     required this.onPressed,
+    super.key,
     this.enabled = true,
     this.autofocus = false,
   });

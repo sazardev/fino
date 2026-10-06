@@ -6,13 +6,13 @@ import '../design/app_spacing.dart';
 
 /// A labeled integer control: coarse slider plus −/+ buttons for exact steps.
 class ValueStepper extends StatelessWidget {
-  const ValueStepper({
-    super.key,
+  const new({
     required this.label,
     required this.value,
     required this.min,
     required this.max,
     required this.onChanged,
+    super.key,
     this.format,
   });
 

@@ -5,7 +5,7 @@ import '../../../ui/molecules/section_header.dart';
 import '../../../ui/molecules/switching_icon_button.dart';
 
 class ButtonsSection extends StatefulWidget {
-  const ButtonsSection({super.key});
+  const new({super.key});
 
   @override
   State<ButtonsSection> createState() => _ButtonsSectionState();

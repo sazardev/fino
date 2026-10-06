@@ -11,7 +11,7 @@ import '../../ui/theme/accent_palette.dart';
 /// Every user-customizable look-and-feel setting. Each one is listenable and
 /// persisted; changes apply live.
 class AppSettings {
-  AppSettings(SharedPreferences prefs)
+  new(SharedPreferences prefs)
     : accent = PersistedValue(
         prefs: prefs,
         key: 'accent_color',

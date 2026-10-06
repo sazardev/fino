@@ -10,11 +10,11 @@ import 'app_destination.dart';
 /// the icon) that widens into an extended one (label beside it). Same
 /// destinations, icons and pill as the bottom bar.
 class AppSideRail extends StatelessWidget {
-  const AppSideRail({
-    super.key,
+  const new({
     required this.destinations,
     required this.index,
     required this.onSelect,
+    super.key,
     this.leading,
   });
 

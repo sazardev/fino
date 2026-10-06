@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Append only: never reorder or remove entries, so stored choices keep
 /// resolving.
 abstract final class AccentPalette {
-  const AccentPalette._();
+  const new _();
 
   static const Color defaultAccent = Color(0xFF10B981); // emerald
 

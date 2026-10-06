@@ -8,11 +8,7 @@ import '../design/app_durations.dart';
 /// alive (scroll position, half-typed forms) and switches with a fade plus a
 /// small scale-in. Hidden children don't paint, take focus, tick or read out.
 class FadeScaleIndexedStack extends StatelessWidget {
-  const FadeScaleIndexedStack({
-    super.key,
-    required this.index,
-    required this.children,
-  });
+  const new({required this.index, required this.children, super.key});
 
   final int index;
   final List<Widget> children;
@@ -32,7 +28,7 @@ class FadeScaleIndexedStack extends StatelessWidget {
 }
 
 class _Page extends StatelessWidget {
-  const _Page({
+  const new({
     required this.active,
     required this.duration,
     required this.child,

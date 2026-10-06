@@ -5,11 +5,7 @@ import 'app_settings.dart';
 /// Hands [AppSettings] to every screen below it. Screens listen to the
 /// individual settings they care about.
 class SettingsScope extends InheritedWidget {
-  const SettingsScope({
-    super.key,
-    required this.settings,
-    required super.child,
-  });
+  const new({required this.settings, required super.child, super.key});
 
   final AppSettings settings;
 

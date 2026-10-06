@@ -8,7 +8,7 @@ import '../../../ui/molecules/settings_row.dart';
 import '../../../ui/molecules/value_stepper.dart';
 
 class SelectionSection extends StatefulWidget {
-  const SelectionSection({super.key});
+  const new({super.key});
 
   @override
   State<SelectionSection> createState() => _SelectionSectionState();

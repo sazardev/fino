@@ -1,3 +1,4 @@
+import 'package:fino/ui/responsive/ui_size_scope.dart' show UiSizeScope;
 import 'package:flutter/widgets.dart';
 
 import 'responsive.dart';
@@ -5,7 +6,7 @@ import 'responsive.dart';
 /// Scales text and icons for the screen and the user's UI size. Place it in
 /// `MaterialApp.builder`, below [UiSizeScope].
 class ResponsiveScaler extends StatelessWidget {
-  const ResponsiveScaler({super.key, required this.child});
+  const new({required this.child, super.key});
 
   final Widget child;
 

@@ -3,37 +3,30 @@ import 'package:flutter/material.dart';
 import '../design/app_curves.dart';
 import 'fino_mark_painter.dart';
 
-/// The Fino logo. [progress] (0..1) plays the build: the dial sketches itself,
-/// the coin pops into the opening, then the "equals" bars draw across. At 1 it
-/// is the final logo. Colors follow the accent.
+/// The Fino logo: a hand-lettered "F" in fine ink. [progress] (0..1) writes
+/// it stroke by stroke (cap, stem, crossbar) with short pen lifts between
+/// them, then an ink drop closes the stem's curl. At 1 it is the final logo.
+/// Ink follows the accent.
 class FinoMark extends StatelessWidget {
-  const FinoMark({
-    super.key,
-    required this.progress,
-    this.size = 160,
-    this.color,
-    this.tint,
-  });
+  const new({required this.progress, super.key, this.size = 160, this.color});
 
   final Animation<double> progress;
   final double size;
 
-  /// The ring; defaults to the theme's primary.
+  /// The ink; defaults to the theme's primary.
   final Color? color;
 
-  /// The bars and coin; defaults to a lighter tone of [color].
-  final Color? tint;
-
-  static const _ring = Interval(0.0, 0.55, curve: Curves.easeInOutCubic);
-  static const _track = Interval(0.0, 0.2, curve: Curves.easeOut);
-  static const _trackOut = Interval(0.45, 0.6);
-  static const _coin = Interval(0.42, 0.7, curve: AppCurves.bouncy);
-  static const _bars = Interval(0.6, 0.92, curve: Curves.easeOutCubic);
+  // A hand slows into and out of each stroke; the gaps are pen lifts.
+  static const _strokes = [
+    Interval(0, 0.32, curve: Curves.easeInOutSine),
+    Interval(0.38, 0.74, curve: Curves.easeInOutCubic),
+    Interval(0.8, 0.93, curve: Curves.easeInOutSine),
+  ];
+  static const _drop = Interval(0.7, 1, curve: AppCurves.bouncy);
 
   @override
   Widget build(BuildContext context) {
-    final base = color ?? Theme.of(context).colorScheme.primary;
-    final light = tint ?? Color.lerp(base, Colors.white, 0.55)!;
+    final ink = color ?? Theme.of(context).colorScheme.primary;
 
     return Semantics(
       image: true,
@@ -47,12 +40,9 @@ class FinoMark extends StatelessWidget {
               return CustomPaint(
                 size: Size.square(size),
                 painter: FinoMarkPainter(
-                  ring: _ring.transform(t),
-                  track: _track.transform(t) * (1 - _trackOut.transform(t)),
-                  coin: _coin.transform(t),
-                  bars: _bars.transform(t),
-                  color: base,
-                  tint: light,
+                  strokes: [for (final s in _strokes) s.transform(t)],
+                  drop: _drop.transform(t),
+                  color: ink,
                 ),
               );
             },

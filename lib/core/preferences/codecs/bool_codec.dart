@@ -1,7 +1,7 @@
 import 'value_codec.dart';
 
 class BoolCodec implements ValueCodec<bool> {
-  const BoolCodec();
+  const new();
 
   @override
   String encode(bool value) => value.toString();

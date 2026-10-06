@@ -4,7 +4,7 @@ import '../design/app_spacing.dart';
 
 /// Small caption above a group of settings or components.
 class SectionHeader extends StatelessWidget {
-  const SectionHeader(this.title, {super.key});
+  const new(this.title, {super.key});
 
   final String title;
 

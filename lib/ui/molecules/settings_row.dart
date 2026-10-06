@@ -7,11 +7,11 @@ import '../design/app_spacing.dart';
 /// Flat row: label (+ optional subtitle) on the left, a trailing control on
 /// the right. No ripple; bounces as a whole when [onTap] is given.
 class SettingsRow extends StatelessWidget {
-  const SettingsRow({
-    super.key,
+  const new({
     required this.label,
-    this.subtitle,
     required this.trailing,
+    super.key,
+    this.subtitle,
     this.onTap,
     this.labelColor,
   });

@@ -1,0 +1,38 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  exclude:
+    - build/**
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+    - '**/*.drift.dart'
+    - '**/*.gr.dart'
+    - test/generated_migrations/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+
+linter:
+  rules:
+    # STACK.md §2: relative imports inside a feature, package: between layers.
+    always_use_package_imports: false
+    # STACK.md §4 wants docs only in core/ and ui/; tool/check_docs.dart
+    # is not built, so this is off rather than noisy everywhere.
+    public_member_api_docs: false
+    # STACK.md §4 explicit list (already on in very_good_analysis, pinned here
+    # so a package upgrade can never silently drop them).
+    prefer_const_constructors: true
+    prefer_final_locals: true
+    avoid_print: true
+    always_declare_return_types: true
+    unawaited_futures: true
+    use_build_context_synchronously: true
+    require_trailing_commas: true
+    directives_ordering: true

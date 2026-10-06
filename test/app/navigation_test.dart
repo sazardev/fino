@@ -10,11 +10,11 @@ import '../support/load_fonts.dart';
 import '../support/nav_helpers.dart';
 
 /// The gallery's switch (other pages stay mounted, hidden, with their own).
-final _gallerySwitch = find.descendant(
+final Finder _gallerySwitch = find.descendant(
   of: find.byType(GalleryPage),
   matching: find.byType(Switch),
 );
-final _fab = find.byType(AppFab);
+final Finder _fab = find.byType(AppFab);
 
 Future<void> _toggleGallerySwitch(WidgetTester tester) async {
   await tester.scrollUntilVisible(
@@ -37,7 +37,7 @@ void main() {
 
   group('navigation follows the window width, not the platform', () {
     testWidgets('compact: bottom bar, no rail', (tester) async {
-      await pumpFino(tester, size: const Size(390, 844));
+      await pumpFino(tester);
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
     });
@@ -100,7 +100,7 @@ void main() {
   testWidgets('resizing bar ↔ rail keeps destination and state', (
     tester,
   ) async {
-    await pumpFino(tester, size: const Size(390, 844));
+    await pumpFino(tester);
     await goTo(tester, galleryIcon);
     await _toggleGallerySwitch(tester);
 
@@ -199,7 +199,7 @@ void main() {
     });
 
     testWidgets('shows only its icon on compact screens', (tester) async {
-      await pumpFino(tester, size: const Size(390, 844));
+      await pumpFino(tester);
       expect(find.text('Nuevo'), findsNothing);
     });
   });

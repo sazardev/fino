@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 
 /// `#RRGGBB` text field that follows [color] and reports valid entries.
 class HexField extends StatefulWidget {
-  const HexField({
-    super.key,
+  const new({
     required this.color,
     required this.onChanged,
+    super.key,
     this.label = 'Hex',
   });
 

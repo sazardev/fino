@@ -8,7 +8,7 @@ import 'codecs/value_codec.dart';
 /// Reads its stored value synchronously on creation, so the first frame
 /// already shows the user's choice.
 class PersistedValue<T> extends ValueNotifier<T> {
-  PersistedValue({
+  new({
     required SharedPreferences prefs,
     required this.key,
     required T initial,

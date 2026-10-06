@@ -19,7 +19,7 @@ import 'components/tooltip_component_theme.dart';
 /// Flat, rounded Material 3 theme. Interactive feedback comes from
 /// `BouncyTap`'s press-scale spring, not from the ink ripple.
 abstract final class AppTheme {
-  const AppTheme._();
+  const new _();
 
   static ThemeData light(Color accent) => _build(accent, Brightness.light);
 

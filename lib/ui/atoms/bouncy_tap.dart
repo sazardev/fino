@@ -12,9 +12,9 @@ import 'focus_halo.dart';
 ///
 /// Focusable, so a keyboard, D-pad or rotary can reach and activate it.
 class BouncyTap extends StatefulWidget {
-  const BouncyTap({
-    super.key,
+  const new({
     required this.child,
+    super.key,
     this.onTap,
     this.onLongPress,
     this.pressedScale = 0.92,
@@ -53,7 +53,7 @@ class _BouncyTapState extends State<BouncyTap>
     reverseCurve: AppCurves.bouncy,
   );
   late final Animation<double> _scale = _curved.drive(
-    Tween<double>(begin: 1.0, end: widget.pressedScale),
+    Tween<double>(begin: 1, end: widget.pressedScale),
   );
 
   bool _focused = false;

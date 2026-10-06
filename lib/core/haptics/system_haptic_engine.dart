@@ -4,7 +4,7 @@ import 'haptic_engine.dart';
 
 /// [HapticEngine] backed by the platform's `HapticFeedback`.
 class SystemHapticEngine implements HapticEngine {
-  const SystemHapticEngine();
+  const new();
 
   @override
   void light() => HapticFeedback.lightImpact();

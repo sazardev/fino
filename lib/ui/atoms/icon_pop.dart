@@ -8,7 +8,7 @@ import '../design/app_curves.dart';
 /// Squashes [child], springs it past its size and settles with a small wobble
 /// every time [trigger] changes.
 class IconPop extends StatefulWidget {
-  const IconPop({super.key, required this.trigger, required this.child});
+  const new({required this.trigger, required this.child, super.key});
 
   final int trigger;
   final Widget child;
@@ -26,7 +26,7 @@ class _IconPopState extends State<IconPop> with SingleTickerProviderStateMixin {
   late final Animation<double> _scale = TweenSequence<double>([
     TweenSequenceItem(
       tween: Tween<double>(
-        begin: 1.0,
+        begin: 1,
         end: 0.72,
       ).chain(CurveTween(curve: AppCurves.select)),
       weight: 18,
@@ -34,7 +34,7 @@ class _IconPopState extends State<IconPop> with SingleTickerProviderStateMixin {
     TweenSequenceItem(
       tween: Tween<double>(
         begin: 0.72,
-        end: 1.0,
+        end: 1,
       ).chain(CurveTween(curve: AppCurves.bouncy)),
       weight: 82,
     ),

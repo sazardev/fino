@@ -8,13 +8,7 @@ import 'package:flutter/material.dart';
 ///
 /// Size and color come from the ambient [IconTheme] unless given.
 class ChubbyIcon extends StatelessWidget {
-  const ChubbyIcon(
-    this.icon, {
-    super.key,
-    this.size,
-    this.color,
-    this.plump = 0.055,
-  });
+  const new(this.icon, {super.key, this.size, this.color, this.plump = 0.055});
 
   final IconData icon;
   final double? size;
@@ -46,7 +40,6 @@ class ChubbyIcon extends StatelessWidget {
         children: [
           ExcludeSemantics(
             child: RichText(
-              textScaler: TextScaler.noScaling,
               textDirection: TextDirection.ltr,
               overflow: TextOverflow.visible,
               text: TextSpan(

@@ -11,13 +11,10 @@ import 'package:flutter/animation.dart';
 /// controller: the controller clamps the overshoot flat. Drive it through a
 /// `CurvedAnimation` instead.
 class SpringCurve extends Curve {
-  const SpringCurve({
-    this.mass = 1.0,
-    this.stiffness = 200.0,
-    this.damping = 10.0,
-  }) : assert(mass > 0),
-       assert(stiffness > 0),
-       assert(damping >= 0);
+  const new({this.mass = 1.0, this.stiffness = 200.0, this.damping = 10.0})
+    : assert(mass > 0, 'mass must be positive'),
+      assert(stiffness > 0, 'stiffness must be positive'),
+      assert(damping >= 0, 'damping cannot be negative');
 
   final double mass;
   final double stiffness;
@@ -28,13 +25,9 @@ class SpringCurve extends Curve {
     stiffness: 300,
     damping: 8,
   );
-  static const SpringCurve snappy = SpringCurve(
-    mass: 1.0,
-    stiffness: 400,
-    damping: 18,
-  );
+  static const SpringCurve snappy = SpringCurve(stiffness: 400, damping: 18);
   static const SpringCurve gentle = SpringCurve(
-    mass: 2.0,
+    mass: 2,
     stiffness: 150,
     damping: 20,
   );

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 /// Shared corner-radius scale. Everything rounded uses one of these.
 abstract final class AppRadii {
-  const AppRadii._();
+  const new _();
 
   static const double sm = 14;
   static const double md = 20;

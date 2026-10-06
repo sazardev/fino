@@ -8,7 +8,7 @@ import 'sections/typography_section.dart';
 
 /// Every component of the design system on one screen, for eyeballing.
 class GalleryPage extends StatelessWidget {
-  const GalleryPage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

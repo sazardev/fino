@@ -6,7 +6,7 @@ import '../design/app_spacing.dart';
 /// Use it only when it tells the user something the screen doesn't already
 /// (the person's name on their detail, "New entry" on a form).
 class ScreenTitle extends StatelessWidget {
-  const ScreenTitle(this.title, {super.key});
+  const new(this.title, {super.key});
 
   final String title;
 

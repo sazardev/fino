@@ -23,7 +23,7 @@ void main() {
   });
 
   test('an over-damped spring never overshoots', () {
-    const curve = SpringCurve(mass: 1, stiffness: 100, damping: 40);
+    const curve = SpringCurve(stiffness: 100, damping: 40);
     for (var i = 0; i <= 100; i++) {
       expect(curve.transform(i / 100), lessThanOrEqualTo(1.0001));
     }

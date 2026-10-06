@@ -4,11 +4,7 @@ import 'flat_segmented_button.dart';
 
 /// System / Light / Dark.
 class ThemeModeSelector extends StatelessWidget {
-  const ThemeModeSelector({
-    super.key,
-    required this.mode,
-    required this.onChanged,
-  });
+  const new({required this.mode, required this.onChanged, super.key});
 
   final ThemeMode mode;
   final ValueChanged<ThemeMode> onChanged;

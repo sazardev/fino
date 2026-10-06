@@ -9,7 +9,7 @@ import 'system_haptic_engine.dart';
 /// Two phases, like a physical button: press-down is a light [tap]; a
 /// decision adds a firmer beat ([confirm], [warning]).
 abstract final class Haptics {
-  const Haptics._();
+  const new _();
 
   static HapticEngine engine = const SystemHapticEngine();
 
@@ -32,7 +32,8 @@ abstract final class Haptics {
   static void confirm() => _fire(engine.medium);
 
   /// A switch flipped: firmer when turned on.
-  static void toggle(bool on) => _fire(on ? engine.medium : engine.light);
+  static void toggle({required bool on}) =>
+      _fire(on ? engine.medium : engine.light);
 
   /// A destructive step.
   static void warning() => _fire(engine.heavy);

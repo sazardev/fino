@@ -8,12 +8,12 @@ import '../design/app_spacing.dart';
 
 /// A selectable tile: tonal when idle, accent-filled when [selected].
 class SelectableCard extends StatelessWidget {
-  const SelectableCard({
-    super.key,
+  const new({
     required this.label,
-    this.subtitle,
     required this.selected,
     required this.onTap,
+    super.key,
+    this.subtitle,
   });
 
   final String label;

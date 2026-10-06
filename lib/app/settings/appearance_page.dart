@@ -12,7 +12,7 @@ import 'settings_scope.dart';
 
 /// Theme mode, accent color and interface size. Every choice applies live.
 class AppearancePage extends StatelessWidget {
-  const AppearancePage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

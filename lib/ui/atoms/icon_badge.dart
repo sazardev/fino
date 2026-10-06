@@ -6,9 +6,9 @@ import 'chubby_icon.dart';
 /// Rounded square with a tinted fill and a plump icon. [inverted] is for use
 /// on a primary-filled surface.
 class IconBadge extends StatelessWidget {
-  const IconBadge({
-    super.key,
+  const new({
     required this.icon,
+    super.key,
     this.size = 40,
     this.inverted = false,
   });

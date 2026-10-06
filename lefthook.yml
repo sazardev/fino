@@ -1,0 +1,25 @@
+# Git hooks. Installed by tool/setup.sh. Never bypass (STACK.md §5).
+pre-commit:
+  parallel: false
+  commands:
+    format:
+      glob: '*.dart'
+      exclude: '(\.g|\.freezed|\.drift|\.gr)\.dart$'
+      run: dart format --output=none --set-exit-if-changed {staged_files}
+    analyze:
+      glob: '*.dart'
+      run: flutter analyze --fatal-infos --fatal-warnings
+    file-length:
+      glob: '*.dart'
+      run: dart run tool/check_file_length.dart
+    test:
+      glob: '*.{dart,yaml}'
+      run: flutter test
+
+pre-push:
+  parallel: false
+  commands:
+    generated:
+      run: tool/check_generated.sh
+    full-check:
+      run: tool/check.sh

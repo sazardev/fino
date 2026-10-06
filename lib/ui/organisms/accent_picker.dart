@@ -10,11 +10,11 @@ import '../molecules/custom_accent_swatch.dart';
 /// Accent-color choices: palette swatches plus a custom color with an inline
 /// HSV / hex picker. Controlled through [color] and [onChanged].
 class AccentPicker extends StatefulWidget {
-  const AccentPicker({
-    super.key,
+  const new({
     required this.colors,
     required this.color,
     required this.onChanged,
+    super.key,
     this.swatchSize = 52,
   });
 

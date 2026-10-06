@@ -5,7 +5,7 @@ import '../../../ui/molecules/section_header.dart';
 import '../../../ui/theme/tabular_text.dart';
 
 class TypographySection extends StatelessWidget {
-  const TypographySection({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

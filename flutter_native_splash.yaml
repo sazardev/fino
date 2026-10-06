@@ -1,0 +1,13 @@
+# Colors match ColorScheme.fromSeed(AccentPalette.defaultAccent).surface so the
+# native splash and the first Flutter frame are the same color.
+flutter_native_splash:
+  color: "#F5FBF5"
+  color_dark: "#0F1511"
+
+  android: true
+  ios: false
+  web: true
+
+  android_12:
+    color: "#F5FBF5"
+    color_dark: "#0F1511"

@@ -5,11 +5,11 @@ import '../atoms/accent_swatch.dart';
 /// The "custom color" swatch: a neutral disc with a picker icon until the
 /// user has a custom color, then that color.
 class CustomAccentSwatch extends StatelessWidget {
-  const CustomAccentSwatch({
-    super.key,
+  const new({
     required this.color,
     required this.selected,
     required this.onTap,
+    super.key,
     this.size = 52,
   });
 

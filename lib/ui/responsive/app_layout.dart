@@ -4,7 +4,7 @@ import 'responsive.dart';
 
 /// Width constraints for content columns.
 abstract final class AppLayout {
-  const AppLayout._();
+  const new _();
 
   /// Readable column that grows with the screen.
   static double contentWidth(BuildContext context) =>

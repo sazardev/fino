@@ -10,11 +10,11 @@ import 'app_destination.dart';
 /// Bottom navigation for compact screens. The active icon pops each time the
 /// selection changes. On a watch the labels are hidden.
 class AppBottomBar extends StatelessWidget {
-  const AppBottomBar({
-    super.key,
+  const new({
     required this.destinations,
     required this.index,
     required this.onSelect,
+    super.key,
   });
 
   final List<AppDestination> destinations;

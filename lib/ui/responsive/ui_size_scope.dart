@@ -4,7 +4,7 @@ import 'ui_size.dart';
 
 /// Makes the user's [UiSize] available to layout code without a global.
 class UiSizeScope extends InheritedWidget {
-  const UiSizeScope({super.key, required this.size, required super.child});
+  const new({required this.size, required super.child, super.key});
 
   final UiSize size;
 

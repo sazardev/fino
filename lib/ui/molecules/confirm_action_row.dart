@@ -9,13 +9,13 @@ import 'settings_row.dart';
 /// the row swaps for a "confirm" row plus a "cancel" row. Nothing runs until
 /// the confirm row is tapped.
 class ConfirmActionRow extends StatefulWidget {
-  const ConfirmActionRow({
-    super.key,
+  const new({
     required this.icon,
     required this.label,
     required this.confirmLabel,
     required this.hint,
     required this.onConfirmed,
+    super.key,
     this.cancelLabel = 'Cancelar',
   });
 

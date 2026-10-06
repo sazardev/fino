@@ -5,7 +5,7 @@ import '../atoms/app_icon_button.dart';
 /// Back arrow that floats over the content of a secondary screen (there is no
 /// top bar). A tonal circle keeps it readable over whatever scrolls beneath.
 class FloatingBackButton extends StatelessWidget {
-  const FloatingBackButton({super.key, this.onPressed});
+  const new({super.key, this.onPressed});
 
   /// Defaults to popping the nearest navigator.
   final VoidCallback? onPressed;

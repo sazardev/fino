@@ -4,7 +4,7 @@ import 'value_codec.dart';
 
 /// Stores a [Color] as its ARGB integer.
 class ColorCodec implements ValueCodec<Color> {
-  const ColorCodec();
+  const new();
 
   @override
   String encode(Color value) => value.toARGB32().toString();

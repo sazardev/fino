@@ -1,6 +1,6 @@
 /// Shared animation durations.
 abstract final class AppDurations {
-  const AppDurations._();
+  const new _();
 
   static const fast = Duration(milliseconds: 150);
   static const medium = Duration(milliseconds: 300);
