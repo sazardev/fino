@@ -35,4 +35,11 @@ void main() {
     expect(qaFlavorConfig.emulators, isNull);
     expect(prodFlavorConfig.emulators, isNull);
   });
+
+  test('only dev starts a demo session, and it needs the emulators', () {
+    expect(devFlavorConfig.demoSession, isTrue);
+    expect(devFlavorConfig.emulators, isNotNull);
+    expect(qaFlavorConfig.demoSession, isFalse);
+    expect(prodFlavorConfig.demoSession, isFalse);
+  });
 }

@@ -20,6 +20,7 @@ class FlavorConfig {
     required this.analyticsEnabled,
     required this.strictConfiguration,
     this.emulators,
+    this.demoSession = false,
   });
 
   final Flavor flavor;
@@ -39,4 +40,9 @@ class FlavorConfig {
 
   /// Run against the local Firebase emulators instead of a real project.
   final EmulatorConfig? emulators;
+
+  /// Start already signed in as a made-up person, with sample data in the
+  /// local database, so every screen has something to show. Only meaningful
+  /// with [emulators]: it signs in with a fake Google identity.
+  final bool demoSession;
 }
