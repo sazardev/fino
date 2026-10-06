@@ -4,9 +4,9 @@ import '../ui/design/app_durations.dart';
 import '../ui/responsive/responsive_scaler.dart';
 import '../ui/responsive/ui_size_scope.dart';
 import '../ui/theme/app_theme.dart';
-import 'home/home_page.dart';
 import 'settings/app_settings.dart';
 import 'settings/settings_scope.dart';
+import 'shell/app_shell.dart';
 import 'splash/splash_screen.dart';
 
 /// Root widget: wires the user's settings into the theme and the responsive
@@ -34,7 +34,7 @@ class FinoApp extends StatelessWidget {
             size: settings.uiSize.value,
             child: ResponsiveScaler(child: child!),
           ),
-          home: const SplashScreen(next: HomePage()),
+          home: const SplashScreen(next: AppShell()),
         ),
       ),
     );

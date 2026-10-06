@@ -13,7 +13,6 @@ class GalleryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SettingsShell(
-      title: 'Componentes',
       children: [
         ButtonsSection(),
         SelectionSection(),

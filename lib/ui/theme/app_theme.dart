@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../design/app_font.dart';
 import 'app_color_scheme.dart';
 import 'app_text_theme.dart';
-import 'components/app_bar_component_theme.dart';
 import 'components/card_component_theme.dart';
 import 'components/filled_button_component_theme.dart';
 import 'components/icon_button_component_theme.dart';
 import 'components/input_decoration_component_theme.dart';
 import 'components/list_tile_component_theme.dart';
+import 'components/navigation_bar_component_theme.dart';
+import 'components/navigation_rail_component_theme.dart';
 import 'components/outlined_button_component_theme.dart';
 import 'components/segmented_button_component_theme.dart';
 import 'components/slider_component_theme.dart';
@@ -37,9 +38,10 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: scheme.surface,
       splashFactory: NoSplash.splashFactory,
       highlightColor: Colors.transparent,
-      appBarTheme: buildAppBarTheme(text),
       cardTheme: buildCardTheme(scheme),
       listTileTheme: buildListTileTheme(scheme),
+      navigationBarTheme: buildNavigationBarTheme(scheme, text),
+      navigationRailTheme: buildNavigationRailTheme(scheme, text),
       switchTheme: buildSwitchTheme(scheme),
       iconButtonTheme: buildIconButtonTheme(),
       filledButtonTheme: buildFilledButtonTheme(text),

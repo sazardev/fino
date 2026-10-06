@@ -1,31 +1,31 @@
 import 'package:fino/app/gallery/gallery_page.dart';
 import 'package:fino/app/home/home_page.dart';
 import 'package:fino/app/settings/appearance_page.dart';
-import 'package:fino/app/settings/settings_page.dart';
 import 'package:fino/ui/atoms/accent_swatch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/app_harness.dart';
 import '../support/load_fonts.dart';
+import '../support/nav_helpers.dart';
 
 void main() {
   setUpAll(loadGeistFonts);
 
-  testWidgets('splash leads to the home screen', (tester) async {
+  Future<void> openAppearance(WidgetTester tester) async {
+    await goTo(tester, settingsIcon);
+    await tester.tap(find.text('Apariencia'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('splash leads to the home destination', (tester) async {
     await pumpFino(tester);
     expect(find.byType(HomePage), findsOneWidget);
   });
 
-  testWidgets('settings → appearance changes the theme live', (tester) async {
+  testWidgets('appearance changes the theme live', (tester) async {
     final settings = await pumpFino(tester);
-
-    await tester.tap(find.byTooltip('Ajustes'));
-    await tester.pumpAndSettle();
-    expect(find.byType(SettingsPage), findsOneWidget);
-
-    await tester.tap(find.text('Apariencia'));
-    await tester.pumpAndSettle();
+    await openAppearance(tester);
     expect(find.byType(AppearancePage), findsOneWidget);
 
     await tester.tap(find.text('Oscuro'));
@@ -43,10 +43,7 @@ void main() {
 
   testWidgets('the custom color panel opens inline', (tester) async {
     await pumpFino(tester);
-    await tester.tap(find.byTooltip('Ajustes'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Apariencia'));
-    await tester.pumpAndSettle();
+    await openAppearance(tester);
 
     await tester.tap(find.byIcon(Icons.colorize_rounded));
     await tester.pumpAndSettle();
@@ -57,10 +54,7 @@ void main() {
 
   testWidgets('destructive rows confirm in place, no dialog', (tester) async {
     await pumpFino(tester);
-    await tester.tap(find.byTooltip('Ajustes'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Componentes'));
-    await tester.pumpAndSettle();
+    await goTo(tester, galleryIcon);
     expect(find.byType(GalleryPage), findsOneWidget);
 
     await tester.scrollUntilVisible(

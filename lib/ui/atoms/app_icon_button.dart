@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../design/app_curves.dart';
 import '../responsive/responsive.dart';
-import 'app_icon_button_scope.dart';
 import 'bouncy_tap.dart';
 import 'chubby_icon.dart';
 import 'icon_pop.dart';
@@ -28,7 +27,7 @@ class AppIconButton extends StatefulWidget {
   final String? tooltip;
   final bool selected;
 
-  /// Diameter. Defaults to the toolbar's size, else the screen-aware one.
+  /// Diameter. Defaults to the screen-aware size.
   final double? size;
   final bool autofocus;
 
@@ -61,10 +60,7 @@ class _AppIconButtonState extends State<AppIconButton> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final r = Responsive.of(context);
-    final size =
-        widget.size ??
-        AppIconButtonScope.sizeOf(context) ??
-        (r.isWatch ? 34.0 : 44.0 * r.scale);
+    final size = widget.size ?? (r.isWatch ? 34.0 : 44.0 * r.scale);
     final selected = widget.selected;
 
     final button = BouncyTap(

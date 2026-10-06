@@ -17,6 +17,91 @@ Diferencias deliberadas respecto a Enfo:
 | Tipografía | Geist **Mono** en todo | **Geist** (sans) en todo; Geist Mono solo para cifras si se quiere (ver §4) |
 | Acento por defecto | `Colors.lime` | A elegir; propuesta `0xFF10B981` (emerald, ya está en la paleta de Enfo) |
 | Contenido | Relojes y timers | Listas, montos, personas, movimientos |
+| Navegación | Controles flotantes, sin menú | **Barra de navegación inferior** (rail lateral en pantallas anchas); **sin AppBar** |
+| Plataformas | Android, Windows, Linux | **Móvil, tablet y web** con la misma UI, adaptada por ancho |
+
+---
+
+## 0. Reglas innegociables
+
+Tres reglas que ganan sobre cualquier otra sección de este documento.
+
+### 0.1 Cero tolerancia a AppBar y títulos innecesarios
+
+- **Prohibido** `AppBar`, `SliverAppBar`, `appTopBar` y cualquier barra
+  superior. No hay excepciones "por costumbre".
+- El destino activo ya se nombra en la navegación: **no se repite como
+  título**. "Inicio" sobre Inicio, "Ajustes" sobre Ajustes y "Detalle" sobre
+  un detalle sobran.
+- Un título solo existe si **aporta algo que la pantalla no dice sola**, y
+  entonces es *contenido*, no cromo: `headlineSmall` / `titleMedium` dentro
+  del scroll, sin barra ni fondo, y se va con el scroll. Válidos: el nombre de
+  la persona en su detalle, "Nuevo movimiento" en un formulario.
+- **Prueba:** tapa el título con el dedo. Si la pantalla se entiende igual,
+  bórralo.
+- **Volver atrás** en una pantalla secundaria: `AppIconButton`
+  (`arrow_back_rounded`) flotando arriba a la izquierda sobre el contenido, o
+  el gesto/botón del sistema. Acciones de contexto (editar, compartir): íconos
+  sueltos dentro del contenido, nunca una barra.
+
+### 0.2 Navegación inferior
+
+Los destinos primarios viven en la **barra de navegación inferior**
+(`NavigationBar` de Material 3), plana, redonda y animada como el resto.
+
+| Regla | Detalle |
+| --- | --- |
+| Cantidad | 3 a 5 destinos. Lo demás se esconde dentro de Ajustes |
+| Etiquetas | Siempre visibles, **una palabra** ("Inicio", "Deudores", "Ajustes") |
+| Estilo | `elevation 0`, sin tint ni sombra, fondo `surfaceContainer`, indicador en **píldora `primary`**, ícono activo `onPrimary`, inactivo `onSurfaceVariant`, etiqueta activa `w600` |
+| Íconos | `*_rounded` dibujados con `ChubbyIcon`; el activo hace `IconPop` y háptico `select` |
+| Estado | Cada destino conserva su estado (scroll, formulario a medias) al cambiar: `IndexedStack`, no se reconstruye |
+| Transición | Fade + escala 0.96 → 1 (`AppCurves.gentle`, `AppDurations.medium`), igual que `appPageRoute` |
+| Reseleccionar el activo | Vuelve a la raíz del destino (cierra sus subpantallas). *Subir al inicio del scroll: pendiente* |
+| Acción primaria | **Una sola** por pantalla: FAB plano (píldora `primary`/`onPrimary`, `elevation 0`, `BouncyTap`), flotando sobre la barra, alineado al final. En rail va en su slot `leading` |
+| Subpantallas | Cada destino tiene su **propia pila de navegación** (`DestinationNavigator`): un detalle se abre *dentro* del destino y la navegación permanece visible; el gesto atrás del sistema cierra primero esa pila. Formularios de captura: pantalla completa sobre la navegación (no compiten con el teclado) |
+
+### 0.3 Responsive siempre: móvil · tablet · web
+
+Una sola app. La navegación y el layout se deciden por **ancho de ventana**,
+**nunca por plataforma**: web en una ventana angosta es móvil; una tablet en
+split-screen es móvil; un teléfono en landscape ancho es tablet.
+
+| Ancho | `FormFactor` | Navegación | Contenido |
+| --- | --- | --- | --- |
+| < 600 dp | `compact` | `NavigationBar` **inferior** | 1 columna, ancho completo, padding 20 |
+| 600 – 840 dp | `medium` | `NavigationRail` **compacto** a la izquierda (ícono + etiqueta debajo) | Columna centrada de 620 dp |
+| ≥ 840 dp | `expanded` | `NavigationRail` **extendido** (ícono + etiqueta al lado) | Master-detail donde haya lista + detalle; columna de 720 dp |
+| lado corto < 260 dp | `watch` | Barra mínima, **sin etiquetas** | Contenido a lo esencial |
+
+- **Mismos destinos, mismos íconos, mismo estilo** en barra y rail: solo
+  cambia la posición. El rail usa el mismo indicador píldora `primary`.
+- Al cambiar el tamaño (ventana web, split-screen, rotación) la navegación se
+  **transforma en vivo con animación** y conserva destino activo y estado.
+- En pantallas anchas el contenido **nunca** va de borde a borde: columna
+  centrada con ancho máximo (§6).
+- **Web con puntero y teclado de primera clase:** cursor `click` en todo lo
+  tocable, halo de foco visible al navegar con Tab, arrastre con mouse y
+  trackpad para hacer scroll. Misma UI, sin una "versión web" aparte.
+- Objetivos táctiles ≥ 48 dp; todo escala con el tamaño de UI del usuario
+  (`UiSize`) y con el texto del sistema.
+- Nada se diseña "primero para un tamaño": cada pantalla se prueba en
+  watch, móvil, landscape, tablet y desktop/web (§12).
+
+Implementación (un archivo por cosa):
+
+| Archivo | Hace |
+| --- | --- |
+| `ui/templates/navigation/app_destination.dart` | modelo: ícono + etiqueta |
+| `.../app_bottom_bar.dart` | `NavigationBar` (compact, watch sin etiquetas) |
+| `.../app_side_rail.dart` | `NavigationRail` compacto ↔ extendido, con slot `leading` para el FAB |
+| `.../app_navigation_shell.dart` | elige barra o rail con `Responsive.usesSideNavigation`; recibe `destinations`, `pages`, `index`, `onSelect`, `onReselect`, `fab` |
+| `ui/organisms/fade_scale_indexed_stack.dart` | muestra una página (fade + escala) y mantiene vivas las demás |
+| `app/shell/destination_navigator.dart` | pila de navegación propia por destino + gesto atrás |
+
+Las páginas sobreviven al cambio barra ↔ rail porque el shell las monta bajo
+una `GlobalKey`: redimensionar una ventana web o girar una tablet no pierde
+nada (hay un test que lo verifica).
 
 ---
 
@@ -41,8 +126,9 @@ Diferencias deliberadas respecto a Enfo:
    (`ConfirmActionRow`); los selectores son inline.
 6. **Háptico con vocabulario.** Nadie llama `HapticFeedback` directo: se piden
    eventos con nombre (`tap`, `select`, `confirm`, `toggle`, `warning`…).
-7. **Adaptable.** Mismo sistema de teléfono a tablet/desktop, con columna de
-   contenido limitada y escala controlada (ver §6).
+7. **Adaptable.** Mismo sistema en móvil, tablet y web: la navegación pasa de
+   barra inferior a rail según el ancho, con columna de contenido limitada y
+   escala controlada (ver §0.3 y §6).
 8. **Respeta "reducir animaciones".** Toda animación se salta o salta al estado
    final si `MediaQuery.disableAnimationsOf(context)` es `true`.
 
@@ -130,7 +216,7 @@ Curvas estándar de apoyo, también en `AppCurves`: `select` = `easeOut`
 | Estilo | Uso |
 | --- | --- |
 | `headlineSmall` | título de panel embebido, encabezados de sección grandes |
-| `titleMedium` w600, letterSpacing 0.2 | título de `AppBar` |
+| `titleMedium` w600, letterSpacing 0.2 | título de contenido dentro del scroll (solo si aporta, §0.1) |
 | `bodyLarge` | título de fila / tile |
 | `bodySmall` + `onSurfaceVariant` | subtítulo de fila (2 dp bajo el título) |
 | `labelLarge` w600, letterSpacing 0.4 | texto de botones |
@@ -166,8 +252,7 @@ Reemplaza ripple/`InkWell`. Envuelve cualquier cosa tappable.
 - Con animaciones reducidas: salta directo al estado presionado/suelto.
 
 ### `AppIconButton` — botón de ícono redondo y plano
-- Círculo de 44 dp × escala (34 en watch); `AppIconButtonScope` permite que una
-  barra dicte el diámetro de todos sus botones.
+- Círculo de 44 dp × escala (34 en watch).
 - `selected: true` rellena el círculo con `primary` y el ícono pasa a `onPrimary`
   (animado 200 ms `easeOut`).
 - **Pop** (620 ms) al tocar y cada vez que `selected` cambia: el ícono se
@@ -229,10 +314,18 @@ Háptico `warning` al confirmar; spinner de 20 dp mientras corre.
 debajo un `Slider` con pista de 3 dp, **sin overlay**, un háptico `tick` por
 cada paso entero.
 
-### `AppTopBar` (`appTopBar`)
-`AppBar` transparente (sin elevación ni tint), título a la izquierda
-(`centerTitle: false`), alto adaptado: watch 40 / compact 56 / medium 60 /
-expanded 64. Siempre usar `appTopBar`, no `AppBar` pelado.
+### Sin `AppTopBar`
+No existe. Ver §0.1. Su lugar lo toman tres piezas pequeñas:
+
+- **`FloatingBackButton`** — `AppIconButton` con flecha dentro de un círculo
+  tonal (`surfaceContainerHigh`) para leerse sobre lo que haga scroll debajo.
+  `SettingsShell` lo muestra solo si hay a dónde volver y lo alinea con el
+  borde izquierdo de la columna de contenido.
+- **`ScreenTitle`** — título *de contenido* (`headlineSmall` w700): primer
+  elemento del scroll, solo cuando aporta (§0.1).
+- **`AppFab`** — la acción primaria: píldora `primary` plana, `BouncyTap` 0.94,
+  háptico `confirm`. Muestra su etiqueta solo en `expanded`; en el resto,
+  solo el ícono con tooltip.
 
 ### Selector de color inline (`AccentPicker` + `ColorPickerPanel`)
 `Wrap` centrado de swatches (+ swatch "personalizado") → al elegir custom se
@@ -252,41 +345,30 @@ rellenan con una caja sólida de `canvasColor` que se ve como un destello feo
 contra un acento vivo. Toda navegación pasa por `appPageRoute`.
 
 ### `SettingsShell` (pantalla con secciones desplazables)
-`Scaffold` + `appTopBar` + `SafeArea(top: false)` + scroll con padding
+`Scaffold` **sin AppBar** + `SafeArea` + scroll con padding
 `(pagePadding, sm, pagePadding, xxl)`; el contenido va centrado en una columna
-con ancho máximo adaptable (`contentWidth`). Mientras `loaded == false`, un
-`CircularProgressIndicator` centrado. Cuando se embebe en un panel de detalle
-(pantallas anchas) no dibuja `Scaffold` y muestra el título como
-`headlineSmall`.
+con ancho máximo adaptable (`contentWidth`). Si la pantalla necesita título
+(§0.1) es el primer elemento del scroll (`headlineSmall`); si es una
+subpantalla, lleva el botón de volver flotante. Mientras `loaded == false`, un
+`CircularProgressIndicator` centrado.
 
 ### Hub en dos paneles *(pendiente de implementar)*
 < 840 dp: lista de `SettingsNavTile` que empuja pantallas. ≥ 840 dp:
 master-detail (lista a la izquierda, detalle a la derecha con
 `AnimatedSwitcher`, `AppDurations.medium`).
 
-### Pantalla principal "controles flotantes"
-Patrón de Enfo: el contenido protagonista va grande y centrado; las acciones son
-**íconos desnudos, sin superficie detrás**, flotando en el borde:
-- Teléfono vertical → fila horizontal abajo.
-- Tablet / landscape / desktop → columna vertical a la derecha.
-- La acción primaria siempre es la **última** (abajo o a la derecha).
-- Botones de 56 dp (64 en rail) × `min(scale, 1.25)`, encogiéndose solo lo
-  necesario (mín. 36); la barra va en `FittedBox(scaleDown)` como red de
-  seguridad contra overflow. Cada botón entra con `PopIn` escalonado (60 ms).
-- Botón primario que cambia de estado (p. ej. play ↔ pausa, o
-  "agregar" ↔ "listo"): `AnimatedSwitcher` 300 ms con `easeOutBack` de entrada,
-  `RotationTransition` (0.25 → 0 turnos) + `ScaleTransition`; seleccionado
-  rellena el círculo.
-- Reservar el grosor de la barra a **ambos lados** para que el contenido quede
-  exactamente centrado.
-
 ### Splash animado
-~1.9 s, tap para saltar: la marca se **dibuja a sí misma** con un
-`CustomPainter` (anillo con `easeInOutCubic`, pivote con `AppCurves.bouncy`, mano
-con `easeOutCubic`) y luego el nombre sube 10 dp con fade (`Interval 0.55–0.85`).
-Cierra con `pushReplacement(appPageRoute(...))`. Con animaciones reducidas
-muestra el logo final. Fino necesita su propia marca; usar el mismo guion
-de animación (trazar → pop del punto clave → remate).
+~2.6 s, tap para saltar: la marca es una **"F" caligráfica de pluma
+puntiaguda** que se **escribe a sí misma** con un `CustomPainter`
+(`FinoMarkPainter`). Cada trazo se pre-muestrea una vez y su grosor sigue la
+presión de la pluma: hairline (0.7) al subir o ir de lado, se ensancha (4.2) al
+bajar, con entradas y salidas afiladas. Guion: remate superior
+(`easeInOutSine`) → levantada → fuste con rizo (`easeInOutCubic`) → gota de
+tinta al final del rizo (`AppCurves.bouncy`) → travesaño. Una copia difusa al
+18 % debajo simula tinta sobre papel. Luego el nombre (w400, tracking 10) sube
+10 dp con fade (`Interval 0.66–0.92`). Cierra con
+`pushReplacement(appPageRoute(...))`. Con animaciones reducidas muestra el
+logo final. La tinta sigue el acento (`primary`).
 
 ### Onboarding
 Wizard de pasos donde **cada elección se aplica en vivo** (idioma, tema, acento,
@@ -297,12 +379,12 @@ entradas escalonadas con `Interval(a, b, curve: easeOutCubic)`.
 
 ## 6. Responsive (`Responsive.of(context)`)
 
-| FormFactor | Condición | Notas |
-| --- | --- | --- |
-| `watch` | lado corto < 260 dp | UI mínima; escala 1.0; padding 10 |
-| `compact` | ancho < 600 | teléfono vertical |
-| `medium` | 600–840 | teléfono horizontal, tablet chica |
-| `expanded` | ≥ 840 | tablet, desktop, TV; master-detail |
+| FormFactor | Condición | Navegación | Notas |
+| --- | --- | --- | --- |
+| `watch` | lado corto < 260 dp | barra mínima sin etiquetas | UI mínima; escala 1.0; padding 10 |
+| `compact` | ancho < 600 | `NavigationBar` inferior | móvil vertical, web angosta |
+| `medium` | 600–840 | rail compacto | móvil horizontal, tablet chica |
+| `expanded` | ≥ 840 | rail extendido | tablet, desktop, web ancha; master-detail |
 
 - `scale = clamp(shortestSide / 480, 1.0, 1.5) × uiSize.multiplier`
   (`UiSize`: small 0.9 · normal 1.0 · large 1.25 · extraLarge 1.5). Texto e
@@ -351,16 +433,18 @@ ajuste. Usar `AppSwitch`, no `Switch`.
 ## 9. Mapa de Fino sobre el sistema (propuesta de UI)
 
 Solo para orientar el uso de componentes; la funcionalidad se define aparte.
+Destinos de ejemplo (3–5, una palabra): **Inicio · Deudores · Historial ·
+Ajustes**. Ninguna pantalla lleva AppBar.
 
 | Pantalla | Componentes del sistema |
 | --- | --- |
-| Inicio / resumen | patrón "controles flotantes": resumen grande y centrado + barra de acciones con `PopIn`; acción primaria "nuevo movimiento" al final |
-| Lista de deudores | `SettingsNavTile`-style: badge circular con inicial/avatar, nombre `bodyLarge`, subtítulo (último movimiento), monto w700 a la derecha con `tabularFigures`; `BouncyTap` 0.98; entrada escalonada con `PopIn` |
-| Detalle de deudor | `SettingsShell`; tarjetas `lg`; filas de movimientos con `SettingsRow` |
-| Agregar / editar | campos con el `InputDecorationTheme` del tema (relleno tonal, radio `sm`), stepper ± para montos, chips `SelectableCard` para categorías/atajos; guardar al final del bar |
+| Inicio | Resumen grande y centrado dentro de la columna; sin título (la barra ya dice "Inicio"); FAB plano "nuevo movimiento" |
+| Deudores | Lista de filas estilo `SettingsNavTile`: badge circular con inicial, nombre `bodyLarge`, subtítulo (último movimiento), monto `w700` con cifras tabulares; `BouncyTap` 0.98; entrada escalonada con `PopIn`. En `expanded`: master-detail (lista + detalle) |
+| Detalle de deudor | Botón de volver flotante; el **nombre de la persona** como título en el scroll (aporta información); tarjetas `lg`; movimientos con `SettingsRow` |
+| Agregar / editar | Pantalla completa sin navegación; título en el scroll; campos con el `InputDecorationTheme` del tema, stepper ± para montos, chips `SelectableCard`; guardar como acción primaria |
 | Eliminar / borrar todo | `ConfirmActionRow` (sin diálogo) |
-| Ajustes | hub `SettingsNavTile`: Apariencia (modo + acento + tamaño de UI), Idioma, Vibración, Datos |
-| Estado vacío | ícono `ChubbyIcon` grande + texto; el ícono entra con `PopIn` |
+| Ajustes | Lista de `SettingsNavTile`: Apariencia, Idioma, Vibración, Datos. Sin título "Ajustes" repetido |
+| Estado vacío | `ChubbyIcon` grande + texto; el ícono entra con `PopIn` |
 | Carga | `CircularProgressIndicator` centrado (único spinner del sistema) |
 
 ---
@@ -368,7 +452,7 @@ Solo para orientar el uso de componentes; la funcionalidad se define aparte.
 ## 10. Arquitectura y estructura de carpetas
 
 **Regla de oro: un archivo hace una sola cosa.** Ningún archivo de `lib/`
-pasa de ~125 líneas; si crece, se parte. Un widget por archivo, un token por
+pasa de 150 líneas (lo verifica un test); si crece, se parte. Un widget por archivo, un token por
 archivo, un componente de tema por archivo.
 
 ```
@@ -377,7 +461,8 @@ lib/
   app/                          composición de la app (la única capa que conoce a todas)
     fino_app.dart               MaterialApp + tema + escala responsive
     settings/                   AppSettings, SettingsScope, hub y pantalla Apariencia
-    splash/  home/              pantallas
+    shell/                      AppShell (destinos) · DestinationNavigator · can_pop_observer
+    splash/  home/              pantallas (home incluye el formulario de ejemplo)
     gallery/                    galería de componentes (+ sections/, una por archivo)
   core/                         sin UI, sin dependencias de ui/
     haptics/                    HapticEngine (interfaz) · SystemHapticEngine · Haptics · haptics_binding
@@ -387,22 +472,24 @@ lib/
     design/                     tokens: app_spacing · app_radii · app_durations
                                 · spring_curve · app_curves · app_font
     responsive/                 form_factor · ui_size · ui_size_scope · responsive
-                                · responsive_scaler · app_layout · app_bar_height
+                                · responsive_scaler · app_layout
     theme/                      accent_palette · app_color_scheme · app_text_theme
                                 · tabular_text · app_theme
       components/               un *_component_theme.dart por componente Material
+                                (incluye navigation_bar y navigation_rail; sin app_bar)
     atoms/                      bouncy_tap · focus_halo · chubby_icon · icon_pop
-                                · app_icon_button(+_scope) · app_switch
+                                · app_icon_button · app_switch
                                 · accent_swatch · pop_in · icon_badge
     molecules/                  settings_row · settings_nav_tile · selectable_card
                                 · section_header · empty_state · value_stepper
                                 · gradient_slider · hex_field · color_picker_panel
                                 · custom_accent_swatch · flat_segmented_button
                                 · theme_mode_selector · ui_size_selector
-                                · confirm_action_row · switching_icon_button · app_top_bar
-    organisms/                  accent_picker · action_bar (+ action_bar_metrics)
-    templates/                  settings_shell · floating_actions/ (shell, layout,
-                                watch_layout, action_bar_sizing)
+                                · confirm_action_row · switching_icon_button
+                                · app_fab · floating_back_button · screen_title
+    organisms/                  accent_picker · fade_scale_indexed_stack
+    templates/                  settings_shell · navigation/ (app_destination,
+                                app_bottom_bar, app_side_rail, app_navigation_shell)
     navigation/                 app_page_route
     brand/                      fino_mark · fino_mark_painter
 ```
@@ -456,12 +543,26 @@ no importa `ui/`. Las pantallas de `app/` solo componen.
   `adaptive_theme`).
 - Los textos de UI están en español dentro de los widgets. **Pendiente:**
   l10n con ARB (el checklist lo exige cuando el idioma sea configurable).
+- **Pendiente:** subir al inicio del scroll al reseleccionar el destino activo
+  (hoy solo vuelve a la raíz); el gesto atrás en la raíz de un destino que no
+  es el primero sale de la app en vez de volver a Inicio.
+- **Deuda de tamaño:** `fino_mark_painter.dart` (el logo "F" caligráfico)
+  pasa de 150 líneas; falta separar `PenStroke` en su propio archivo. Está en
+  la lista `oversize` de `design_rules_test.dart`: vaciarla al partir el archivo.
 - **Pendiente:** hub de ajustes en dos paneles (master-detail ≥ 840 dp) y
   háptica compuesta con `vibration` (hoy solo `HapticFeedback` del sistema).
-- Tests (`flutter test`): tokens y curvas, persistencia de ajustes,
-  `BouncyTap` (escala + háptica), flujo de ajustes, y una **matriz de
-  responsive** que renderiza cada pantalla en watch / teléfono / landscape /
-  tablet / desktop × UI small / extraLarge y falla ante cualquier overflow.
+- Tests (`flutter test`):
+  - tokens y curvas, persistencia de ajustes, `BouncyTap` (escala + háptica);
+  - **`design_rules_test`**: escanea `lib/` y falla ante `AppBar`, `appBar:`,
+    diálogos, bottom sheets, `InkWell`, sombras o `HapticFeedback` directo, y
+    ante archivos de más de 150 líneas;
+  - **navegación**: barra vs rail por ancho (incluye móvil en landscape),
+    cero AppBar en cada destino y tamaño, el destino no se repite como título,
+    estado conservado entre destinos y al redimensionar, subpantallas con la
+    navegación visible, volver flotante y gesto atrás, FAB;
+  - una **matriz de responsive** que recorre cada destino, una subpantalla y el
+    formulario en watch / móvil / landscape / medium / tablet / desktop / web
+    ancho × UI small / extraLarge y falla ante cualquier overflow.
   Se carga Geist real con `FontLoader` (la fuente de test, Ahem, es mucho más
   ancha y reporta overflows falsos).
 - Verificación visual sin pantalla: `matchesGoldenFile` con `--update-goldens`
@@ -469,7 +570,10 @@ no importa `ui/`. Las pantallas de `app/` solo componen.
 
 ## 12. Checklist de revisión (para cada pantalla/PR)
 
-- [ ] ¿Usa solo tokens (`AppSpacing`, `AppRadii`, `Motion`) y roles del `ColorScheme`?
+- [ ] ¿**Cero AppBar**? ¿Algún título repite lo que ya dice la navegación? (prueba del dedo, §0.1)
+- [ ] ¿La navegación es `NavigationBar` en compact y rail en medium/expanded, decidida por ancho?
+- [ ] ¿Hay una sola acción primaria y las subpantallas tienen volver flotante?
+- [ ] ¿Usa solo tokens (`AppSpacing`, `AppRadii`, `AppCurves`, `AppDurations`) y roles del `ColorScheme`?
 - [ ] ¿Cero sombras, bordes, gradientes decorativos, ripple, diálogos y sheets?
 - [ ] ¿Todo lo tappable pasa por `BouncyTap` (o `AppIconButton`)?
 - [ ] ¿Los íconos son `*_rounded` y, en botones, `ChubbyIcon`?
@@ -477,6 +581,6 @@ no importa `ui/`. Las pantallas de `app/` solo componen.
 - [ ] ¿Las entradas usan `PopIn` escalonado y la navegación `appPageRoute`?
 - [ ] ¿Respeta `disableAnimations`?
 - [ ] ¿Los montos usan cifras tabulares y la deuda no depende solo del color?
-- [ ] ¿Probado sin overflow en watch / teléfono / landscape / tablet / desktop y en `UiSize.extraLarge`?
+- [ ] ¿Probado sin overflow en watch / teléfono / landscape / tablet / desktop-web y en `UiSize.extraLarge`, y al redimensionar en vivo conserva destino y estado?
 - [ ] ¿Los eventos hápticos vienen del vocabulario `Haptics.*`?
 - [ ] ¿Todo texto visible sale de l10n (no strings sueltos)?

@@ -19,7 +19,6 @@ class AppearancePage extends StatelessWidget {
     final settings = SettingsScope.of(context);
 
     return SettingsShell(
-      title: 'Apariencia',
       children: [
         const SectionHeader('Tema'),
         ValueListenableBuilder<ThemeMode>(

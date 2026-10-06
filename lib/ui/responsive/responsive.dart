@@ -57,6 +57,10 @@ class Responsive {
   bool get isLandscape => size.width > size.height;
   bool get isExpanded => factor == FormFactor.expanded;
 
+  /// Primary navigation goes in a side rail instead of the bottom bar.
+  bool get usesSideNavigation =>
+      factor == FormFactor.medium || factor == FormFactor.expanded;
+
   /// Side-by-side layout: room for content plus a control panel.
   bool get isWide => !isWatch && size.width >= 600 && size.aspectRatio > 1.15;
 
