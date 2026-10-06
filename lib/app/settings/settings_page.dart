@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/auth/presentation/widgets/profile_card.dart';
 import '../../features/auth/presentation/widgets/sign_out_row.dart';
 import '../../features/changelog/presentation/widgets/changelog_nav_tile.dart';
 import '../../ui/atoms/app_switch.dart';
@@ -19,6 +20,7 @@ class SettingsPage extends StatelessWidget {
 
     return SettingsShell(
       children: [
+        const ProfileCard(),
         SettingsNavTile(
           icon: Icons.palette_rounded,
           title: 'Apariencia',

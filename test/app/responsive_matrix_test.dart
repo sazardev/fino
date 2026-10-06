@@ -34,7 +34,11 @@ void main() {
         }
 
         // A secondary screen, with its floating back button.
-        await tester.tap(find.byIcon(Icons.palette_rounded).first);
+        // Settings now opens with the profile; scroll to the tile on a watch.
+        final appearance = find.byIcon(Icons.palette_rounded).first;
+        await tester.ensureVisible(appearance);
+        await tester.pumpAndSettle();
+        await tester.tap(appearance);
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: 'appearance');
         await tester.tap(find.byTooltip('Volver'));
