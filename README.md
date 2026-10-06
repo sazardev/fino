@@ -32,4 +32,6 @@ Linux solo ejecuta `dev`.
 | `tool/gen.sh` | Regenera código (Riverpod, rutas, Drift, Freezed) |
 | `tool/check.sh` | Formato, analyzer, tamaño de archivos, tests y cobertura |
 | `dart run tool/bump_version.dart <major\|minor\|patch> [--dry-run]` | Publica versión: sube `pubspec.yaml`, genera `CHANGELOG.md` desde los commits, commit + tag |
+| `tool/release.sh <major\|minor\|patch> [--dry-run]` | Publica versión: sube `pubspec.yaml`, genera `CHANGELOG.md` desde los commits, commit + tag (funciona con el árbol sucio) |
+| `tool/commit_clean.sh -m "…"` | Commitea lo staged ejecutando el pre-commit en un clon limpio, para que trabajo ajeno sin commitear no lo tumbe |
 | `tool/update_web_assets.sh` | Descarga el runtime web de Drift |

@@ -138,6 +138,11 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - Si el hook falla: **se arregla la causa**. Nunca se esquiva, se baja una regla ni se agrega `// ignore` para pasar.
 - Está bloqueado también en `.claude/settings.json` (deny) y por el hook `PreToolUse` `.claude/hooks/block-hook-bypass.sh`, que rechaza el comando antes de ejecutarlo; el CI lo verifica. Esos archivos no se editan para aflojar el bloqueo.
 - Un commit que no pasó el hook **no se reporta como hecho**.
+- **Commit con trabajo ajeno sin commitear en el árbol.** El pre-commit corre sobre *todo* el árbol, no solo lo staged: un archivo a medias de otra línea de trabajo (o de otra sesión) lo tumba aunque tu cambio esté bien. No se salta ni se baja una regla: se commitea desde un clon limpio, donde el hook corre completo sobre exactamente lo que se commitea.
+  1. `git add <solo lo tuyo>`
+  2. `tool/commit_clean.sh -m "tipo(alcance): asunto"` (o `-F archivo`). Clona `HEAD`, aplica solo lo staged, commitea con los hooks y mueve la rama aquí sin tocar tus archivos.
+  - No sirve `git worktree`: dentro de un hook de worktree Flutter pierde su versión y `pub get` falla.
+  - Si el hook falla, no se commitea nada: arregla la causa y repite. Si `HEAD` se movió mientras tanto, se niega y no cambia nada.
 
 ---
 
@@ -232,6 +237,8 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - **Releases y changelog automáticos**, desde los commits: `dart run tool/bump_version.dart <major|minor|patch> [--dry-run]`. Lee los Conventional Commits (`feat`, `fix`, `perf`…) desde el último tag `v*`, sube la versión de `pubspec.yaml`, regenera `CHANGELOG.md` y `assets/changelog.json` (lo que muestra Ajustes → Novedades), y crea el commit `chore(release): vX.Y.Z` con su tag. Con `--dry-run` solo muestra lo que saldría.
   - Los archivos del release **no se editan a mano**. Un commit que no siga `tipo(alcance): asunto` no aparece en el changelog: escribe los asuntos pensando en quien lee las novedades (`feat` → Novedades, `fix` → Correcciones, `perf` → Mejoras; el resto solo en `CHANGELOG.md`). `tipo!:` marca un cambio incompatible: sube `major`.
   - Exige árbol limpio; el commit pasa por el pre-commit de siempre y, si falla, no deja nada a medias.
+  - **Siempre se publica con `tool/release.sh <major|minor|patch> [--dry-run]`.** Con el árbol limpio equivale a `bump_version.dart`; con trabajo pendiente (que `bump_version.dart` no acepta) hace el release en un clon limpio de `HEAD` —pre-commit incluido— y trae commit + tag con `git reset --keep`. Solo publica lo ya commiteado, no lo pendiente. Si `pubspec.yaml`, `CHANGELOG.md` o `assets/changelog.json` tienen cambios locales, se niega y no deja nada. Ver también el commit con trabajo ajeno en §5.
+  - Receta: commitea lo tuyo (§5) → `tool/release.sh patch --dry-run` para ver las notas → `tool/release.sh patch`.
 - Permisos de Android: solo los estrictamente necesarios.
 - Tamaño de la app vigilado: sin assets ni dependencias sin uso; `flutter build appbundle --analyze-size` en revisiones de release.
 
