@@ -1,10 +1,12 @@
 import 'package:fino/app/fino_app.dart';
 import 'package:fino/app/settings/app_settings.dart';
 import 'package:fino/app/splash/splash_screen.dart';
+import 'package:fino/core/database/app_database.dart';
 import 'package:fino/features/auth/domain/auth_repository.dart';
 import 'package:fino/features/changelog/domain/changelog_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +25,8 @@ Future<AppSettings> pumpFino(
   RecordingAnalyticsService? analytics,
   ChangelogRepository? changelog,
   String? initialLocation,
+  Future<void> Function(AppDatabase db)? seed,
+  List<Override> extra = const [],
 }) async {
   SharedPreferences.setMockInitialValues(stored);
   final settings = AppSettings(await SharedPreferences.getInstance());
@@ -39,6 +43,12 @@ Future<AppSettings> pumpFino(
     );
   }
 
+  AppDatabase? database;
+  if (seed != null) {
+    database = testDatabase();
+    await tester.runAsync(() => seed(database!));
+  }
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: testOverrides(
@@ -46,6 +56,8 @@ Future<AppSettings> pumpFino(
         auth: auth,
         analytics: analytics,
         changelog: changelog,
+        database: database,
+        extra: extra,
       ),
       child: const FinoApp(),
     ),

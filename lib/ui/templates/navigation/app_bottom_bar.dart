@@ -6,6 +6,7 @@ import '../../atoms/chubby_icon.dart';
 import '../../atoms/icon_pop.dart';
 import '../../responsive/responsive.dart';
 import 'app_destination.dart';
+import 'destination_badge.dart';
 
 /// Bottom navigation for compact screens. The active icon pops each time the
 /// selection changes. On a watch the labels are hidden.
@@ -38,10 +39,16 @@ class AppBottomBar extends StatelessWidget {
           NavigationDestination(
             label: d.label,
             tooltip: d.label,
-            icon: ChubbyIcon(d.icon, size: iconSize),
+            icon: DestinationBadge(
+              count: d.badge,
+              child: ChubbyIcon(d.icon, size: iconSize),
+            ),
             selectedIcon: IconPop(
               trigger: index,
-              child: ChubbyIcon(d.icon, size: iconSize),
+              child: DestinationBadge(
+                count: d.badge,
+                child: ChubbyIcon(d.icon, size: iconSize),
+              ),
             ),
           ),
       ],

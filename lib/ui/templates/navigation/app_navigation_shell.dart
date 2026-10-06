@@ -5,6 +5,7 @@ import '../../organisms/fade_scale_indexed_stack.dart';
 import '../../responsive/responsive.dart';
 import 'app_bottom_bar.dart';
 import 'app_destination.dart';
+import 'app_fab_slot.dart';
 import 'app_side_rail.dart';
 
 /// The app's frame: primary navigation plus the active destination's page.
@@ -34,8 +35,8 @@ class AppNavigationShell extends StatefulWidget {
   /// Called when the active destination is tapped again.
   final ValueChanged<int>? onReselect;
 
-  /// The screen's one primary action: floats over the bar, or sits atop the
-  /// rail.
+  /// The screen's one primary action: floats at the bottom-end of the page,
+  /// above the bar when there is one.
   final Widget? fab;
 
   @override
@@ -72,9 +73,15 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
               destinations: widget.destinations,
               index: widget.index,
               onSelect: _select,
-              leading: widget.fab,
             ),
-          Expanded(child: pages),
+          Expanded(
+            child: Stack(
+              children: [
+                pages,
+                AppFabSlot(fab: widget.fab),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: useRail
@@ -84,7 +91,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
               index: widget.index,
               onSelect: _select,
             ),
-      floatingActionButton: useRail ? null : widget.fab,
     );
   }
 }

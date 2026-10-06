@@ -7,11 +7,11 @@ import '../atoms/bouncy_tap.dart';
 import '../atoms/chubby_icon.dart';
 import '../design/app_curves.dart';
 import '../design/app_durations.dart';
-import '../design/app_spacing.dart';
 import '../responsive/responsive.dart';
 
-/// The screen's one primary action: a flat `primary` pill (no shadow). Shows
-/// its label on wide screens, only the icon otherwise.
+/// The screen's one primary action: a flat `primary` circle (no shadow) with
+/// only an icon, on every screen size. [label] is the tooltip and what screen
+/// readers announce.
 class AppFab extends StatelessWidget {
   const new({
     required this.icon,
@@ -27,8 +27,8 @@ class AppFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final r = Responsive.of(context);
-    final height = 56.0 * math.min(r.scale, 1.25);
+    // Capped so it stays slim on tablets and wide web windows.
+    final size = 56.0 * math.min(Responsive.of(context).scale, 1.1);
 
     return Tooltip(
       message: label,
@@ -37,8 +37,7 @@ class AppFab extends StatelessWidget {
           Haptics.confirm();
           onPressed();
         },
-        pressedScale: 0.94,
-        focusBorderRadius: BorderRadius.circular(height),
+        focusBorderRadius: BorderRadius.circular(size),
         child: Semantics(
           button: true,
           label: label,
@@ -46,30 +45,13 @@ class AppFab extends StatelessWidget {
           child: AnimatedContainer(
             duration: AppDurations.medium,
             curve: AppCurves.settle,
-            height: height,
-            constraints: BoxConstraints(minWidth: height),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            width: size,
+            height: size,
             decoration: BoxDecoration(
               color: scheme.primary,
-              borderRadius: BorderRadius.circular(height),
+              shape: BoxShape.circle,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ChubbyIcon(icon, color: scheme.onPrimary),
-                if (r.isExpanded) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: scheme.onPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            child: Center(child: ChubbyIcon(icon, color: scheme.onPrimary)),
           ),
         ),
       ),

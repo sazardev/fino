@@ -4,10 +4,26 @@ part of '../app_routes.dart';
 @TypedStatefulShellRoute<AppShellRoute>(
   branches: [
     TypedStatefulShellBranch<HomeBranch>(
-      routes: [TypedGoRoute<HomeRoute>(path: '/')],
+      routes: [
+        TypedGoRoute<HomeRoute>(
+          path: '/',
+          routes: [
+            TypedGoRoute<CounterpartRoute>(path: 'cuentas/:teamId/:userId'),
+          ],
+        ),
+      ],
     ),
-    TypedStatefulShellBranch<GalleryBranch>(
-      routes: [TypedGoRoute<GalleryRoute>(path: '/componentes')],
+    TypedStatefulShellBranch<OrdersBranch>(
+      routes: [
+        TypedGoRoute<OrdersRoute>(
+          path: '/pedidos',
+          routes: [TypedGoRoute<OrderDetailRoute>(path: ':orderId')],
+        ),
+        TypedGoRoute<PaymentRoute>(path: '/pagos/:paymentId'),
+      ],
+    ),
+    TypedStatefulShellBranch<InboxBranch>(
+      routes: [TypedGoRoute<InboxRoute>(path: '/buzon')],
     ),
     TypedStatefulShellBranch<SettingsBranch>(
       routes: [
@@ -16,6 +32,8 @@ part of '../app_routes.dart';
           routes: [
             TypedGoRoute<AppearanceRoute>(path: 'apariencia'),
             TypedGoRoute<ChangelogRoute>(path: 'novedades'),
+            TypedGoRoute<GalleryRoute>(path: 'componentes'),
+            TypedGoRoute<TeamDetailRoute>(path: 'equipos/:teamId'),
           ],
         ),
       ],

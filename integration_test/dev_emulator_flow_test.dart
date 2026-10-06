@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:fino/app/home/home_page.dart';
 import 'package:fino/app/splash/splash_screen.dart';
 import 'package:fino/bootstrap/bootstrap.dart';
 import 'package:fino/core/flavor/configs/dev_flavor_config.dart';
 import 'package:fino/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:fino/features/auth/presentation/widgets/google_sign_in_button.dart';
+import 'package:fino/features/orders/presentation/pages/balance_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -41,12 +41,16 @@ void main() {
     expect(find.byType(SignInPage), findsOneWidget);
 
     await tester.tap(find.byType(GoogleSignInButton));
-    for (var i = 0; i < 50 && find.byType(HomePage).evaluate().isEmpty; i++) {
+    for (
+      var i = 0;
+      i < 50 && find.byType(BalancePage).evaluate().isEmpty;
+      i++
+    ) {
       await tester.pump(const Duration(milliseconds: 100));
     }
     await tester.pumpAndSettle();
 
-    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.byType(BalancePage), findsOneWidget);
     debugPrint('home reached on ${defaultTargetPlatform.name}');
   });
 }

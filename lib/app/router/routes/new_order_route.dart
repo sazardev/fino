@@ -1,17 +1,18 @@
 part of '../app_routes.dart';
 
-/// La galería del sistema de diseño (dentro de Ajustes).
-class GalleryRoute extends GoRouteData with $GalleryRoute {
+/// "Nuevo pedido": pantalla completa, sobre la navegación.
+@TypedGoRoute<NewOrderRoute>(path: '/nuevo-pedido')
+class NewOrderRoute extends GoRouteData with $NewOrderRoute {
   const new();
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppTransitionPage(
         key: state.pageKey,
-        child: GalleryPage(
+        child: OrderFormPage(
           onBack: BackNavigation.to(
             context,
-            fallback: const SettingsRoute().location,
+            fallback: const HomeRoute().location,
           ),
         ),
       );

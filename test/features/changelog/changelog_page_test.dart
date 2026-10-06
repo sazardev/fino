@@ -3,6 +3,7 @@ import 'package:fino/features/changelog/domain/changelog_note.dart';
 import 'package:fino/features/changelog/domain/changelog_note_type.dart';
 import 'package:fino/features/changelog/domain/changelog_release.dart';
 import 'package:fino/features/changelog/presentation/pages/changelog_page.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/app_harness.dart';
@@ -58,7 +59,16 @@ void main() {
     await pumpFino(tester, changelog: FakeChangelogRepository(_releases));
     await _openChangelog(tester);
 
-    await tester.scrollUntilVisible(find.text('v0.1.0 · 1 oct 2026'), 200);
+    await tester.scrollUntilVisible(
+      find.text('v0.1.0 · 1 oct 2026'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(ChangelogPage),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     expect(find.text('Mejoras internas y de estabilidad.'), findsOneWidget);
   });
 

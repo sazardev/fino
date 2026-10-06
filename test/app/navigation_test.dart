@@ -1,6 +1,6 @@
-import 'package:fino/app/gallery/gallery_page.dart';
 import 'package:fino/app/settings/appearance_page.dart';
 import 'package:fino/app/settings/settings_page.dart';
+import 'package:fino/features/orders/presentation/pages/orders_page.dart';
 import 'package:fino/ui/molecules/app_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,29 +8,22 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/app_harness.dart';
 import '../support/load_fonts.dart';
 import '../support/nav_helpers.dart';
+import '../support/seed_fino.dart';
 
-/// The gallery's switch (other pages stay mounted, hidden, with their own).
-final Finder _gallerySwitch = find.descendant(
-  of: find.byType(GalleryPage),
-  matching: find.byType(Switch),
+/// The orders search field (pages stay mounted, hidden, with their state).
+final Finder _search = find.descendant(
+  of: find.byType(OrdersPage),
+  matching: find.byType(TextField),
 );
 final Finder _fab = find.byType(AppFab);
 
-Future<void> _toggleGallerySwitch(WidgetTester tester) async {
-  await tester.scrollUntilVisible(
-    _gallerySwitch,
-    200,
-    scrollable: find.descendant(
-      of: find.byType(GalleryPage),
-      matching: find.byType(Scrollable),
-    ),
-  );
-  await tester.tap(_gallerySwitch);
+Future<void> _typeSearch(WidgetTester tester, String text) async {
+  await tester.enterText(_search, text);
   await tester.pumpAndSettle();
 }
 
-bool _galleryValue(WidgetTester tester) =>
-    tester.widget<Switch>(_gallerySwitch).value;
+String _searchText(WidgetTester tester) =>
+    tester.widget<TextField>(_search).controller!.text;
 
 void main() {
   setUpAll(loadGeistFonts);
@@ -70,7 +63,7 @@ void main() {
   ]) {
     testWidgets('no AppBar on any destination at $size', (tester) async {
       await pumpFino(tester, size: size);
-      for (final icon in [homeIcon, galleryIcon, settingsIcon]) {
+      for (final icon in [homeIcon, ordersIcon, inboxIcon, settingsIcon]) {
         await goTo(tester, icon);
         expect(find.byType(AppBar), findsNothing, reason: '$icon');
       }
@@ -86,31 +79,28 @@ void main() {
 
   testWidgets('pages keep their state across destinations', (tester) async {
     await pumpFino(tester);
-    await goTo(tester, galleryIcon);
-    expect(_galleryValue(tester), isTrue);
-
-    await _toggleGallerySwitch(tester);
-    expect(_galleryValue(tester), isFalse);
+    await goTo(tester, ordersIcon);
+    await _typeSearch(tester, 'café');
 
     await goTo(tester, homeIcon);
-    await goTo(tester, galleryIcon);
-    expect(_galleryValue(tester), isFalse);
+    await goTo(tester, ordersIcon);
+    expect(_searchText(tester), 'café');
   });
 
   testWidgets('resizing bar ↔ rail keeps destination and state', (
     tester,
   ) async {
     await pumpFino(tester);
-    await goTo(tester, galleryIcon);
-    await _toggleGallerySwitch(tester);
+    await goTo(tester, ordersIcon);
+    await _typeSearch(tester, 'café');
 
     await resizeTo(tester, const Size(1280, 800));
     expect(find.byType(NavigationRail), findsOneWidget);
-    expect(_galleryValue(tester), isFalse);
+    expect(_searchText(tester), 'café');
 
     await resizeTo(tester, const Size(390, 844));
     expect(find.byType(NavigationBar), findsOneWidget);
-    expect(_galleryValue(tester), isFalse);
+    expect(_searchText(tester), 'café');
   });
 
   group('secondary screens', () {
@@ -186,11 +176,11 @@ void main() {
     testWidgets('opens a full-screen form above the navigation', (
       tester,
     ) async {
-      await pumpFino(tester);
+      await pumpFino(tester, seed: seedFino);
       await tester.tap(_fab);
       await tester.pumpAndSettle();
 
-      expect(find.text('Nuevo movimiento'), findsOneWidget);
+      expect(find.text('Nuevo pedido'), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
 
       await tester.tap(find.byTooltip('Volver'));
@@ -198,25 +188,54 @@ void main() {
       expect(find.byType(NavigationBar), findsOneWidget);
     });
 
-    testWidgets('only the first destination has one', (tester) async {
-      await pumpFino(tester);
+    testWidgets('only Inicio and Pedidos have one', (tester) async {
+      await pumpFino(tester, seed: seedFino);
       expect(_fab, findsOneWidget);
+      await goTo(tester, ordersIcon);
+      expect(_fab, findsOneWidget);
+      await goTo(tester, inboxIcon);
+      expect(_fab, findsNothing);
       await goTo(tester, settingsIcon);
       expect(_fab, findsNothing);
     });
 
-    testWidgets('lives atop the rail on wide screens, with its label', (
+    testWidgets('without a team there is nothing to create yet', (
       tester,
     ) async {
-      await pumpFino(tester, size: const Size(1280, 800));
+      await pumpFino(tester);
+      expect(_fab, findsNothing);
+      expect(find.text('Empieza con tu equipo'), findsOneWidget);
+    });
+
+    testWidgets('floats at the bottom-end, icon only, on wide screens', (
+      tester,
+    ) async {
+      const size = Size(1280, 800);
+      await pumpFino(tester, size: size, seed: seedFino);
       expect(_fab, findsOneWidget);
-      expect(find.text('Nuevo'), findsOneWidget);
+      expect(find.text('Nuevo pedido'), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
+
+      final rect = tester.getRect(_fab);
+      expect(rect.bottom, greaterThan(size.height - 48));
+      expect(rect.center.dx, greaterThan(size.width / 2));
+      expect(rect.width, lessThanOrEqualTo(64));
+    });
+
+    testWidgets('floats over the content on tablets, icon only', (
+      tester,
+    ) async {
+      const size = Size(700, 900);
+      await pumpFino(tester, size: size, seed: seedFino);
+      expect(_fab, findsOneWidget);
+      expect(find.text('Nuevo pedido'), findsNothing);
+      expect(tester.getRect(_fab).bottom, greaterThan(size.height - 48));
     });
 
     testWidgets('shows only its icon on compact screens', (tester) async {
-      await pumpFino(tester);
-      expect(find.text('Nuevo'), findsNothing);
+      await pumpFino(tester, seed: seedFino);
+      expect(find.text('Nuevo pedido'), findsNothing);
+      expect(find.byTooltip('Nuevo pedido'), findsOneWidget);
     });
   });
 }

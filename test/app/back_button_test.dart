@@ -1,7 +1,7 @@
 import 'package:fino/app/gallery/gallery_page.dart';
-import 'package:fino/app/home/home_page.dart';
 import 'package:fino/app/settings/appearance_page.dart';
 import 'package:fino/app/settings/settings_page.dart';
+import 'package:fino/features/orders/presentation/pages/balance_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -61,7 +61,7 @@ void main() {
 
       testWidgets('no destination root ever shows it', (tester) async {
         await pumpFino(tester, size: size);
-        await goTo(tester, galleryIcon);
+        await goTo(tester, ordersIcon);
         expect(backIn(GalleryPage), findsNothing);
         await goTo(tester, settingsIcon);
         expect(backIn(SettingsPage), findsNothing);
@@ -85,14 +85,14 @@ void main() {
     testWidgets('a top-level screen with nothing below goes home', (
       tester,
     ) async {
-      await pumpFino(tester, initialLocation: '/nuevo');
-      expect(find.text('Nuevo movimiento'), findsOneWidget);
+      await pumpFino(tester, initialLocation: '/nuevo-pedido');
+      expect(find.text('Nuevo pedido'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Volver'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Nuevo movimiento'), findsNothing);
-      expect(find.byType(HomePage), findsOneWidget);
+      expect(find.text('Nuevo pedido'), findsNothing);
+      expect(find.byType(BalancePage), findsOneWidget);
     });
 
     testWidgets('the changelog goes back to Ajustes', (tester) async {

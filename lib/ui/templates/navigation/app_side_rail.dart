@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../atoms/chubby_icon.dart';
 import '../../atoms/icon_pop.dart';
-import '../../design/app_spacing.dart';
 import '../../responsive/responsive.dart';
 import 'app_destination.dart';
+import 'destination_badge.dart';
 
 /// Navigation for medium and expanded screens: a compact rail (label under
 /// the icon) that widens into an extended one (label beside it). Same
@@ -15,15 +15,11 @@ class AppSideRail extends StatelessWidget {
     required this.index,
     required this.onSelect,
     super.key,
-    this.leading,
   });
 
   final List<AppDestination> destinations;
   final int index;
   final ValueChanged<int> onSelect;
-
-  /// Slot above the destinations, where the primary action lives.
-  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -40,20 +36,20 @@ class AppSideRail extends StatelessWidget {
         labelType: extended
             ? NavigationRailLabelType.none
             : NavigationRailLabelType.all,
-        leading: leading == null
-            ? null
-            : Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                child: leading,
-              ),
         destinations: [
           for (final d in destinations)
             NavigationRailDestination(
               label: Text(d.label),
-              icon: ChubbyIcon(d.icon, size: iconSize),
+              icon: DestinationBadge(
+                count: d.badge,
+                child: ChubbyIcon(d.icon, size: iconSize),
+              ),
               selectedIcon: IconPop(
                 trigger: index,
-                child: ChubbyIcon(d.icon, size: iconSize),
+                child: DestinationBadge(
+                  count: d.badge,
+                  child: ChubbyIcon(d.icon, size: iconSize),
+                ),
               ),
             ),
         ],

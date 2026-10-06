@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../core/utils/reduced_motion.dart';
 import '../../ui/brand/fino_mark.dart';
+import '../../ui/brand/fino_mark_painter.dart';
 import '../../ui/responsive/responsive.dart';
 
 /// Cold-start splash: on an accent background the "F" writes itself in white
@@ -26,26 +27,25 @@ class _SplashScreenState extends State<SplashScreen>
     duration: SplashScreen.duration,
   );
   // The rest of the timeline is a short hold on the finished letter.
+  static const _markEnd = 0.85;
   late final Animation<double> _mark = CurvedAnimation(
     parent: _c,
-    curve: const Interval(0, 0.85),
+    curve: const Interval(0, _markEnd),
   );
   bool _left = false;
 
   @override
   void initState() {
     super.initState();
+    FinoMarkPainter.warmUp();
     _c.addStatusListener((s) {
       if (s == AnimationStatus.completed) _leave();
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      // Reduced motion: no build, just the finished logo for a moment.
-      if (context.reduceMotion) {
-        _c.value = 1;
-      } else {
-        _c.forward();
-      }
+      // Reduced motion: skip the writing and only hold the finished logo.
+      if (context.reduceMotion) _c.value = _markEnd;
+      _c.forward();
     });
   }
 

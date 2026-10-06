@@ -1,18 +1,18 @@
 part of '../app_routes.dart';
 
-/// A full-screen form above the navigation (root navigator, no shell).
-@TypedGoRoute<ComposeRoute>(path: '/nuevo')
-class ComposeRoute extends GoRouteData with $ComposeRoute {
+/// "Nuevo equipo": pantalla completa.
+@TypedGoRoute<CreateTeamRoute>(path: '/nuevo-equipo')
+class CreateTeamRoute extends GoRouteData with $CreateTeamRoute {
   const new();
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppTransitionPage(
         key: state.pageKey,
-        child: ComposePage(
+        child: CreateTeamPage(
           onBack: BackNavigation.to(
             context,
-            fallback: const HomeRoute().location,
+            fallback: const SettingsRoute().location,
           ),
         ),
       );

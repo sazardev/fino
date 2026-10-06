@@ -1,7 +1,7 @@
 import 'package:fino/app/fino_app.dart';
-import 'package:fino/app/home/home_page.dart';
 import 'package:fino/app/settings/app_settings.dart';
 import 'package:fino/app/splash/splash_screen.dart';
+import 'package:fino/features/orders/presentation/pages/balance_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -27,6 +27,6 @@ void main() {
     await tester.tap(find.byType(SplashScreen));
     await tester.pumpAndSettle();
 
-    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.byType(BalancePage), findsOneWidget);
   });
 }

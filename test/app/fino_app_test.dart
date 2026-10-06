@@ -1,6 +1,6 @@
 import 'package:fino/app/gallery/gallery_page.dart';
-import 'package:fino/app/home/home_page.dart';
 import 'package:fino/app/settings/appearance_page.dart';
+import 'package:fino/features/orders/presentation/pages/balance_page.dart';
 import 'package:fino/ui/atoms/accent_swatch.dart';
 import 'package:fino/ui/theme/accent_palette.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ void main() {
 
   testWidgets('splash leads to the home destination', (tester) async {
     await pumpFino(tester);
-    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.byType(BalancePage), findsOneWidget);
   });
 
   testWidgets('appearance changes the theme live', (tester) async {
@@ -60,7 +60,11 @@ void main() {
 
   testWidgets('destructive rows confirm in place, no dialog', (tester) async {
     await pumpFino(tester);
-    await goTo(tester, galleryIcon);
+    await goTo(tester, settingsIcon);
+    await tester.ensureVisible(find.text('Componentes'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Componentes'));
+    await tester.pumpAndSettle();
     expect(find.byType(GalleryPage), findsOneWidget);
 
     await tester.scrollUntilVisible(

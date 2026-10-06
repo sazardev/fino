@@ -8,12 +8,15 @@ import 'sections/typography_section.dart';
 
 /// Every component of the design system on one screen, for eyeballing.
 class GalleryPage extends StatelessWidget {
-  const new({super.key});
+  const new({super.key, this.onBack});
+
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
-    return const SettingsShell(
-      children: [
+    return SettingsShell(
+      onBack: onBack,
+      children: const [
         ButtonsSection(),
         SelectionSection(),
         FeedbackSection(),
