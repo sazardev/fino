@@ -1,0 +1,510 @@
+rules_version = '2';
+
+// Fino — reglas de Firestore.
+//
+// Modelo (ver DATA_MODEL.md):
+//   invites/{code}                                    entrada por código (solo `get`)
+//   teams/{team}                                      nombre, admin, código, memberIds
+//   teams/{team}/members/{uid}                        perfil + rol
+//   teams/{team}/members/{uid}/payout/main            método de cobro (privado, M4)
+//   teams/{team}/members/{uid}/payers/{debtorId}      quién puede ver el método (M4)
+//   teams/{team}/orders|debts|payments|ledger|notices
+//   users/{uid}/inbox/{id}                            buzón de notificaciones
+//
+// Estas reglas son la red de seguridad de AUTORIZACIÓN e invariantes (quién
+// puede escribir qué y qué transiciones de estado son válidas). Las reglas de
+// negocio finas (reparto, deudas vivas al salir, etc.) viven en el dominio.
+//
+// Límite de Firestore: 20 accesos get/exists por petición batch. Casi todo se
+// valida con UN solo documento (teams/{team}: memberIds + adminId).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------- helpers
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return request.auth.uid;
+    }
+
+    function teamRef(teamId) {
+      return /databases/$(database)/documents/teams/$(teamId);
+    }
+
+    function teamData(teamId) {
+      return get(teamRef(teamId)).data;
+    }
+
+    // `get` sobre un equipo inexistente falla y deniega: un equipo borrado
+    // deja sus subdocumentos inalcanzables.
+    function isMember(teamId) {
+      return signedIn() && me() in teamData(teamId).memberIds;
+    }
+
+    function isAdmin(teamId) {
+      return signedIn() && teamData(teamId).adminId == me();
+    }
+
+    function isIntAbove0(value) {
+      return value is int && value > 0;
+    }
+
+    function isShortText(value, max) {
+      return value is string && value.size() > 0 && value.size() <= max;
+    }
+
+    function stampsNow(data) {
+      return data.updatedAt == request.time;
+    }
+
+    // ------------------------------------------------------------------ users
+    match /users/{uid} {
+      // Lo que una persona posee vive bajo /users/{uid}/…
+      match /{document=**} {
+        allow read, write: if signedIn() && me() == uid;
+      }
+
+      // Buzón: cualquier compañero de equipo puede dejar un aviso (el push
+      // real lo enviará un servicio aparte); solo su dueño lo lee o limpia.
+      match /inbox/{notificationId} {
+        allow read, delete: if signedIn() && me() == uid;
+
+        allow create: if signedIn()
+            && request.resource.data.keys().hasOnly([
+              'kind', 'actorId', 'teamId', 'targetType', 'targetId',
+              'amountCents', 'concept', 'debtCount', 'rejectedCount',
+              'note', 'templateKey', 'createdAt'])
+            && request.resource.data.keys().hasAll([
+              'kind', 'actorId', 'teamId', 'targetType', 'targetId',
+              'createdAt'])
+            && request.resource.data.actorId == me()
+            && request.resource.data.createdAt == request.time
+            && request.resource.data.kind in [
+              'orderDebtCreated', 'debtAddedToOrder', 'debtAmountChanged',
+              'paymentReported', 'paymentRetracted', 'paymentReviewed',
+              'confirmationUndone', 'debtCancelled', 'orderCancelled',
+              'notice', 'debtObjected', 'paymentAwaitingConfirmation',
+              'memberJoined']
+            && request.resource.data.targetType in [
+              'debt', 'payment', 'pay', 'history', 'team']
+            && me() in teamData(request.resource.data.teamId).memberIds
+            && uid in teamData(request.resource.data.teamId).memberIds
+            && (!('note' in request.resource.data)
+                || isShortText(request.resource.data.note, 200));
+
+        // Marcar como leída es lo único que se edita.
+        allow update: if signedIn() && me() == uid
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['readAt']);
+      }
+    }
+
+    // ---------------------------------------------------------------- invites
+    // Entrar a un equipo: se conoce el código, no el equipo. Solo `get`.
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+
+      allow create: if signedIn()
+          && code.matches('^[A-Z0-9]{8}$')
+          && request.resource.data.keys().hasOnly(['teamId', 'teamName'])
+          && request.resource.data.keys().hasAll(['teamId'])
+          && getAfter(teamRef(request.resource.data.teamId)).data.adminId == me()
+          && getAfter(teamRef(request.resource.data.teamId)).data.inviteCode
+              == code;
+
+      allow delete: if isAdmin(resource.data.teamId);
+      allow update: if false;
+    }
+
+    // ------------------------------------------------------------------ teams
+    // Descubrir mis equipos: collectionGroup('members').where('userId', ==, me).
+    match /{path=**}/members/{memberId} {
+      allow read: if signedIn() && resource.data.userId == me();
+    }
+
+    match /teams/{teamId} {
+      // Un equipo que ya no existe se lee como "no existe" (así los demás
+      // dispositivos se enteran de que lo eliminaron); uno que existe, solo
+      // sus miembros.
+      allow get: if signedIn()
+          && (resource == null || me() in resource.data.memberIds);
+
+      // Crear: el creador queda como único miembro y admin.
+      allow create: if signedIn()
+          && request.resource.data.keys().hasOnly([
+            'name', 'adminId', 'inviteCode', 'memberIds', 'createdAt'])
+          && isShortText(request.resource.data.name, 50)
+          && request.resource.data.adminId == me()
+          && request.resource.data.memberIds == [me()]
+          && request.resource.data.inviteCode.matches('^[A-Z0-9]{8}$')
+          && request.resource.data.createdAt == request.time;
+
+      allow update: if signedIn() && (
+          adminEditsTeam()
+          || transfersAdmin()
+          || joinsTeam()
+          || leavesTeam()
+          || adminExpelsMember());
+
+      allow delete: if signedIn() && resource.data.adminId == me();
+
+      function changed() {
+        return request.resource.data.diff(resource.data).affectedKeys();
+      }
+
+      // El admin cambia nombre o código.
+      function adminEditsTeam() {
+        return resource.data.adminId == me()
+            && changed().hasOnly(['name', 'inviteCode'])
+            && isShortText(request.resource.data.name, 50)
+            && request.resource.data.inviteCode.matches('^[A-Z0-9]{8}$');
+      }
+
+      // El admin pasa su rol a otro miembro (E6).
+      function transfersAdmin() {
+        return resource.data.adminId == me()
+            && changed().hasOnly(['adminId'])
+            && request.resource.data.adminId != me()
+            && request.resource.data.adminId in resource.data.memberIds;
+      }
+
+      // Me uno con un código válido: mi `members/{me}` se crea en el mismo batch.
+      function joinsTeam() {
+        return changed().hasOnly(['memberIds'])
+            && !(me() in resource.data.memberIds)
+            && request.resource.data.memberIds.size()
+                == resource.data.memberIds.size() + 1
+            && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+            && me() in request.resource.data.memberIds
+            && existsAfter(/databases/$(database)/documents/teams/$(teamId)/members/$(me()));
+      }
+
+      // Me salgo; el admin no puede (primero transfiere o elimina el equipo).
+      function leavesTeam() {
+        return changed().hasOnly(['memberIds'])
+            && resource.data.adminId != me()
+            && me() in resource.data.memberIds
+            && !(me() in request.resource.data.memberIds)
+            && request.resource.data.memberIds.size()
+                == resource.data.memberIds.size() - 1
+            && resource.data.memberIds.hasAll(request.resource.data.memberIds);
+      }
+
+      // El admin expulsa a un miembro (quitándolo de la lista).
+      function adminExpelsMember() {
+        return resource.data.adminId == me()
+            && changed().hasOnly(['memberIds'])
+            && me() in request.resource.data.memberIds
+            && request.resource.data.memberIds.size()
+                == resource.data.memberIds.size() - 1
+            && resource.data.memberIds.hasAll(request.resource.data.memberIds);
+      }
+
+      // ---------------------------------------------------------------- members
+      match /members/{userId} {
+        allow read: if isMember(teamId);
+
+        // Creador del equipo (admin) o alguien que entra con el código.
+        allow create: if signedIn() && userId == me()
+            && request.resource.data.userId == me()
+            && request.resource.data.joinedAt == request.time
+            && request.resource.data.displayName is string
+            && request.resource.data.displayName.size() <= 80
+            && (
+              (request.resource.data.keys().hasOnly([
+                  'userId', 'role', 'joinedAt', 'displayName', 'photoUrl'])
+                && request.resource.data.role == 'admin'
+                && getAfter(teamRef(teamId)).data.adminId == me()
+                && getAfter(teamRef(teamId)).data.memberIds == [me()])
+              ||
+              (request.resource.data.keys().hasOnly([
+                  'userId', 'role', 'joinedAt', 'displayName', 'photoUrl',
+                  'inviteCode'])
+                && request.resource.data.role == 'member'
+                && request.resource.data.inviteCode is string
+                && get(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode))
+                    .data.teamId == teamId
+                && !(me() in teamData(teamId).memberIds)
+                && me() in getAfter(teamRef(teamId)).data.memberIds));
+
+        allow update: if isMember(teamId) && (
+            // Mi perfil (nombre y foto de Google).
+            (userId == me()
+              && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['displayName', 'photoUrl']))
+            ||
+            // El rol sigue a `adminId` del equipo (transferencia de admin).
+            (isAdmin(teamId)
+              && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['role'])
+              && request.resource.data.role
+                  == (getAfter(teamRef(teamId)).data.adminId == userId
+                      ? 'admin' : 'member')));
+
+        // Salir (yo) o expulsar (admin); `memberIds` se actualiza en el batch.
+        // Al eliminar el equipo, el admin limpia los miembros en el mismo batch.
+        allow delete: if signedIn()
+            && ((!(userId in getAfter(teamRef(teamId)).data.memberIds)
+                && ((userId == me() && teamData(teamId).adminId != me())
+                    || (isAdmin(teamId) && userId != me())))
+                || (isAdmin(teamId) && !existsAfter(teamRef(teamId))));
+
+        // Método de cobro: solo su dueño lo escribe; lo leen el dueño y quien
+        // el dueño haya dado de alta en `payers` (deuda viva con él, M4).
+        match /payout/main {
+          allow read: if signedIn() && isMember(teamId)
+              && (me() == userId
+                  || exists(/databases/$(database)/documents/teams/$(teamId)/members/$(userId)/payers/$(me())));
+
+          allow create, update: if signedIn() && me() == userId
+              && isMember(teamId)
+              && request.resource.data.keys().hasOnly([
+                'type', 'number', 'bankName', 'holderName'])
+              && request.resource.data.keys().hasAll(['type', 'number'])
+              && ((request.resource.data.type == 'clabe'
+                    && request.resource.data.number.matches('^[0-9]{18}$'))
+                  || (request.resource.data.type == 'card'
+                    && request.resource.data.number.matches('^[0-9]{16}$')
+                    && isShortText(request.resource.data.get('bankName', ''), 60)))
+              && (!('holderName' in request.resource.data)
+                  || isShortText(request.resource.data.holderName, 80));
+
+          // No se puede quitar: solo reemplazar (SetPayoutMethod).
+          allow delete: if false;
+        }
+
+        // Quién puede ver mi método: lo gestiona únicamente su dueño.
+        match /payers/{debtorId} {
+          allow read: if signedIn() && (me() == userId || me() == debtorId);
+          allow create, update, delete: if signedIn() && me() == userId
+              && isMember(teamId)
+              && debtorId in teamData(teamId).memberIds;
+        }
+      }
+
+      // ----------------------------------------------------------------- orders
+      match /orders/{orderId} {
+        allow read: if isMember(teamId);
+
+        allow create: if isMember(teamId)
+            && request.resource.data.keys().hasOnly([
+              'creditorId', 'concept', 'note', 'total', 'spentAt',
+              'createdAt', 'updatedAt'])
+            && request.resource.data.keys().hasAll([
+              'creditorId', 'concept', 'total', 'spentAt', 'createdAt',
+              'updatedAt'])
+            && request.resource.data.creditorId == me()
+            && isShortText(request.resource.data.concept, 80)
+            && (!('note' in request.resource.data)
+                || request.resource.data.note == null
+                || request.resource.data.note is string)
+            && isIntAbove0(request.resource.data.total)
+            && request.resource.data.createdAt == request.time
+            && stampsNow(request.resource.data)
+            // M2: sin método de cobro no hay pedidos.
+            && exists(/databases/$(database)/documents/teams/$(teamId)/members/$(me())/payout/main);
+
+        allow update: if isMember(teamId)
+            && resource.data.creditorId == me()
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['concept', 'note', 'total', 'spentAt', 'updatedAt'])
+            && isShortText(request.resource.data.concept, 80)
+            && isIntAbove0(request.resource.data.total)
+            && stampsNow(request.resource.data);
+
+        // Un pedido nunca se borra: se cancelan sus deudas.
+        allow delete: if false;
+      }
+
+      // ------------------------------------------------------------------ debts
+      match /debts/{debtId} {
+        allow read: if isMember(teamId);
+
+        allow create: if isMember(teamId)
+            && request.resource.data.keys().hasOnly([
+              'orderId', 'creditorId', 'debtorId', 'amount', 'status',
+              'createdAt', 'updatedAt'])
+            && request.resource.data.keys().hasAll([
+              'orderId', 'creditorId', 'debtorId', 'amount', 'status',
+              'createdAt', 'updatedAt'])
+            && request.resource.data.creditorId == me()
+            && request.resource.data.debtorId != me()
+            && request.resource.data.debtorId in teamData(teamId).memberIds
+            && request.resource.data.status == 'pending'
+            && isIntAbove0(request.resource.data.amount)
+            && request.resource.data.createdAt == request.time
+            && stampsNow(request.resource.data)
+            && getAfter(/databases/$(database)/documents/teams/$(teamId)/orders/$(request.resource.data.orderId))
+                .data.creditorId == me();
+
+        allow update: if isMember(teamId)
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['amount', 'status', 'paymentId', 'updatedAt'])
+            && stampsNow(request.resource.data)
+            && (creditorMove(teamId, debtId) || debtorMove(teamId, debtId));
+
+        allow delete: if false;
+
+        function noPayment(data) {
+          return data.get('paymentId', null) == null;
+        }
+
+        function sameAmount() {
+          return request.resource.data.amount == resource.data.amount;
+        }
+
+        // El acreedor: editar monto, cancelar, confirmar, rechazar, deshacer.
+        function creditorMove(teamId, debtId) {
+          return me() == resource.data.creditorId
+              && (
+                // Editar monto de una deuda pendiente.
+                (resource.data.status == 'pending'
+                  && request.resource.data.status == 'pending'
+                  && isIntAbove0(request.resource.data.amount)
+                  && noPayment(request.resource.data))
+                // Cancelar (perdonar) una pendiente.
+                || (resource.data.status == 'pending'
+                  && request.resource.data.status == 'cancelled'
+                  && sameAmount() && noPayment(request.resource.data))
+                // Confirmar un pago reportado.
+                || (resource.data.status == 'paymentReported'
+                  && request.resource.data.status == 'confirmed'
+                  && sameAmount()
+                  && request.resource.data.paymentId == resource.data.paymentId)
+                // Rechazar un pago reportado: vuelve a pendiente.
+                || (resource.data.status == 'paymentReported'
+                  && request.resource.data.status == 'pending'
+                  && sameAmount() && noPayment(request.resource.data))
+                // Deshacer una confirmación (D4): solo si el deudor sigue.
+                || (resource.data.status == 'confirmed'
+                  && request.resource.data.status == 'paymentReported'
+                  && sameAmount()
+                  && request.resource.data.paymentId == resource.data.paymentId
+                  && resource.data.debtorId in teamData(teamId).memberIds));
+        }
+
+        // El deudor: avisar "Ya pagué" (con su pago) o retirarlo.
+        function debtorMove(teamId, debtId) {
+          return me() == resource.data.debtorId
+              && sameAmount()
+              && (
+                (resource.data.status == 'pending'
+                  && request.resource.data.status == 'paymentReported'
+                  && request.resource.data.paymentId is string
+                  && getAfter(/databases/$(database)/documents/teams/$(teamId)/payments/$(request.resource.data.paymentId))
+                      .data.debtorId == me()
+                  && debtId in getAfter(/databases/$(database)/documents/teams/$(teamId)/payments/$(request.resource.data.paymentId))
+                      .data.debtIds)
+                || (resource.data.status == 'paymentReported'
+                  && request.resource.data.status == 'pending'
+                  && noPayment(request.resource.data)));
+        }
+      }
+
+      // --------------------------------------------------------------- payments
+      match /payments/{paymentId} {
+        allow read: if isMember(teamId);
+
+        allow create: if isMember(teamId)
+            && request.resource.data.keys().hasOnly([
+              'creditorId', 'debtorId', 'debtIds', 'payoutShown', 'reference',
+              'reportedAt', 'awaitingConfirmationReminderSent'])
+            && request.resource.data.keys().hasAll([
+              'creditorId', 'debtorId', 'debtIds', 'payoutShown',
+              'reportedAt', 'awaitingConfirmationReminderSent'])
+            && request.resource.data.debtorId == me()
+            && request.resource.data.creditorId != me()
+            && request.resource.data.creditorId in teamData(teamId).memberIds
+            && request.resource.data.debtIds is list
+            && request.resource.data.debtIds.size() > 0
+            && request.resource.data.debtIds.size() <= 100
+            && request.resource.data.payoutShown.keys().hasOnly([
+              'bankName', 'last4'])
+            && request.resource.data.payoutShown.last4 is string
+            && request.resource.data.payoutShown.last4.size() == 4
+            && request.resource.data.reportedAt == request.time
+            && request.resource.data.awaitingConfirmationReminderSent == false
+            && (!('reference' in request.resource.data)
+                || request.resource.data.reference == null
+                || request.resource.data.reference.size() <= 100);
+
+        // Solo el acreedor marca que ya avisó (una vez por pago, #13).
+        allow update: if isMember(teamId)
+            && resource.data.creditorId == me()
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['awaitingConfirmationReminderSent'])
+            && request.resource.data.awaitingConfirmationReminderSent == true;
+
+        allow delete: if false;
+      }
+
+      // ----------------------------------------------------------------- ledger
+      // Bitácora inmutable. Las líneas confidenciales (referencia de pago,
+      // objeción) solo las ven acreedor y deudor (`partyIds`).
+      match /ledger/{entryId} {
+        allow read: if isMember(teamId)
+            && (resource.data.confidential == false
+                || me() in resource.data.partyIds);
+
+        allow create: if isMember(teamId)
+            && request.resource.data.keys().hasOnly([
+              'orderId', 'type', 'actorId', 'at', 'debtId', 'paymentId',
+              'amountBefore', 'amountAfter', 'note', 'confidential',
+              'partyIds'])
+            && request.resource.data.keys().hasAll([
+              'orderId', 'type', 'actorId', 'at', 'confidential', 'partyIds'])
+            && request.resource.data.actorId == me()
+            && request.resource.data.at == request.time
+            && request.resource.data.type in [
+              'orderCreated', 'orderDetailsEdited', 'orderTotalChanged',
+              'orderRedistributed', 'orderCancelled', 'debtAdded',
+              'debtAmountChanged', 'debtCancelled', 'paymentReported',
+              'paymentRetracted', 'paymentConfirmed', 'paymentRejected',
+              'confirmationUndone', 'debtObjected']
+            && request.resource.data.confidential
+                == (request.resource.data.type in ['paymentReported', 'debtObjected'])
+            && request.resource.data.partyIds is list
+            && request.resource.data.partyIds.size() <= 2
+            && (!('note' in request.resource.data)
+                || request.resource.data.note == null
+                || request.resource.data.note.size() <= 200);
+
+        allow update, delete: if false;
+      }
+
+      // ---------------------------------------------------------------- notices
+      // Registro de avisos del acreedor: solo lo lee quien los envió.
+      match /notices/{noticeId} {
+        allow read: if isMember(teamId) && resource.data.senderId == me();
+
+        allow create: if isMember(teamId)
+            && request.resource.data.keys().hasOnly([
+              'senderId', 'recipientIds', 'template', 'text', 'sentAt'])
+            && request.resource.data.keys().hasAll([
+              'senderId', 'recipientIds', 'sentAt'])
+            && request.resource.data.senderId == me()
+            && request.resource.data.recipientIds is list
+            && request.resource.data.recipientIds.size() > 0
+            && request.resource.data.recipientIds.size() <= 50
+            && !(me() in request.resource.data.recipientIds)
+            && request.resource.data.recipientIds.hasOnly(
+                teamData(teamId).memberIds)
+            && request.resource.data.sentAt == request.time
+            && (!('text' in request.resource.data)
+                || request.resource.data.text == null
+                || request.resource.data.text.size() <= 200);
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Cualquier otra cosa está cerrada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
