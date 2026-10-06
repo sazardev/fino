@@ -9,13 +9,14 @@ import '../responsive/responsive.dart';
 
 /// Row that leads to another screen: icon badge, title, a subtitle with the
 /// current value, and a chevron. On a watch it collapses to icon + title.
-/// [selected] fills it with the accent.
+/// [selected] fills it with the accent. Without [onTap] it is a plain info
+/// tile: no chevron, no press feedback.
 class SettingsNavTile extends StatelessWidget {
   const new({
     required this.icon,
     required this.title,
-    required this.onTap,
     super.key,
+    this.onTap,
     this.subtitle,
     this.selected = false,
   });
@@ -23,7 +24,7 @@ class SettingsNavTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final bool selected;
 
   @override
@@ -37,51 +38,53 @@ class SettingsNavTile extends StatelessWidget {
         ? scheme.onPrimary.withValues(alpha: 0.8)
         : scheme.onSurfaceVariant;
 
+    final tile = AnimatedContainer(
+      duration: AppDurations.fast,
+      padding: EdgeInsets.all(watch ? AppSpacing.md : AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: selected ? scheme.primary : scheme.surfaceContainerHigh,
+        borderRadius: watch ? AppRadii.smRadius : AppRadii.mdRadius,
+      ),
+      child: Row(
+        children: [
+          IconBadge(icon: icon, size: watch ? 32 : 40, inverted: selected),
+          SizedBox(width: watch ? AppSpacing.md : AppSpacing.lg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: (watch ? text.bodyMedium : text.bodyLarge)?.copyWith(
+                    color: foreground,
+                  ),
+                ),
+                if (subtitle != null && !watch) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.bodySmall?.copyWith(color: muted),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (!watch && onTap != null)
+            Icon(Icons.chevron_right_rounded, color: muted),
+        ],
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: BouncyTap(
-        onTap: onTap,
-        pressedScale: 0.98,
-        child: AnimatedContainer(
-          duration: AppDurations.fast,
-          padding: EdgeInsets.all(watch ? AppSpacing.md : AppSpacing.lg),
-          decoration: BoxDecoration(
-            color: selected ? scheme.primary : scheme.surfaceContainerHigh,
-            borderRadius: watch ? AppRadii.smRadius : AppRadii.mdRadius,
-          ),
-          child: Row(
-            children: [
-              IconBadge(icon: icon, size: watch ? 32 : 40, inverted: selected),
-              SizedBox(width: watch ? AppSpacing.md : AppSpacing.lg),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: (watch ? text.bodyMedium : text.bodyLarge)
-                          ?.copyWith(color: foreground),
-                    ),
-                    if (subtitle != null && !watch) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: text.bodySmall?.copyWith(color: muted),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (!watch) Icon(Icons.chevron_right_rounded, color: muted),
-            ],
-          ),
-        ),
-      ),
+      child: onTap == null
+          ? tile
+          : BouncyTap(onTap: onTap, pressedScale: 0.98, child: tile),
     );
   }
 }
