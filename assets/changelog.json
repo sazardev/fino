@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "version": "0.1.1",
+    "date": "2026-10-06",
+    "notes": [
+      {
+        "type": "feat",
+        "scope": "changelog",
+        "subject": "automatic releases and an in-app changelog from commits"
+      },
+      {
+        "type": "feat",
+        "subject": "Linux support and Firebase emulators for the dev flavor"
+      },
+      {
+        "type": "feat",
+        "subject": "foundation for the STACK.md architecture"
+      },
+      {
+        "type": "feat",
+        "subject": "bottom navigation, zero AppBar, responsive bar/rail shell"
+      },
+      {
+        "type": "feat",
+        "subject": "design system based on Enfo (M3 Expressive, Geist, springs)"
+      }
+    ]
+  }
+]
