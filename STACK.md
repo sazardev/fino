@@ -37,8 +37,8 @@ este documento, **se detiene la tarea y se pregunta**; no se rompe la regla.
 | Calidad | `very_good_analysis` + modo estricto, `dart format`, `lefthook` |
 | Tests | `flutter_test`, `mocktail`, `integration_test`, goldens donde aporten |
 
-**Plataformas objetivo:** Android móvil, Android tablet y Web. Nada más.
-No se añade soporte, código ni dependencias para iOS, Windows, Linux o macOS.
+**Plataformas objetivo:** Android móvil, Android tablet y Web; además **Linux de escritorio solo para desarrollo** (flavor `dev` contra los emuladores, ver §3 y §8).
+No se añade soporte, código ni dependencias para iOS, Windows o macOS.
 **No se agrega ninguna dependencia fuera de esta tabla sin aprobación explícita.**
 
 ---
@@ -84,7 +84,7 @@ lib/
 
 | Flavor | applicationId | Firebase | Uso |
 | --- | --- | --- | --- |
-| `dev` | `<id>.dev` | proyecto `fino-dev` | desarrollo diario, logs verbosos |
+| `dev` | `<id>.dev` | **emuladores locales** (`demo-fino-dev`, sin proyecto real) | desarrollo diario, logs verbosos |
 | `qa` | `<id>.qa` | proyecto `fino-qa` | pruebas, datos de prueba, Crashlytics/Analytics en modo debug |
 | `prod` | `<id>` | proyecto `fino-prod` | producción, sin logs, minificado |
 
@@ -97,6 +97,8 @@ lib/
 - Scripts únicos para correr/compilar: `tool/run.sh <flavor>`, `tool/build.sh <flavor>`. No comandos sueltos en la documentación. En Android `--flavor` es obligatorio: sin él Flutter no sabe qué variante compilar.
 - Firebase por flavor: `tool/configure_firebase.sh <flavor>` genera `firebase_options_<flavor>.dart` (FlutterFire CLI). Mientras sean placeholders (`REPLACE_ME`), `prod` **se niega a arrancar** (`strictConfiguration`) y dev/qa avisan en el log.
 - **No** se usa el plugin Gradle `google-services`: Firebase se inicializa desde Dart con las opciones del flavor.
+- **`dev` usa los Firebase Emulators** (`FlavorConfig.emulators`): Auth `:9099`, Firestore `:8085`, UI `:4000` (`firebase.json`). Se levantan con `tool/emulators.sh` (necesita `firebase-tools` y JDK 21+) y los datos persisten en `.firebase/data`. El inicio de sesión de dev usa una identidad Google falsa que el emulador acepta, así que no hace falta cuenta real ni `configure_firebase.sh`. Android dev permite HTTP en claro (`src/dev/AndroidManifest.xml`); en un teléfono físico hace falta `adb reverse tcp:<puerto> tcp:<puerto>` por cada puerto.
+- `qa` y `prod` siempre usan proyectos reales; nunca apuntan a emuladores.
 
 ---
 
@@ -175,6 +177,8 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - Índices en columnas consultadas; consultas pesadas fuera del hilo de UI (isolate de Drift).
 - Firestore: persistencia local desactivada si Drift ya cubre el caso (una sola fuente). `firestore.rules` e índices versionados en el repo y probados con emulador.
 - Auth: **Google Sign-In** vía Firebase Auth. Estado de sesión como `Stream` en un provider; cierre de sesión limpia datos locales sensibles.
+- **Linux no tiene plugins FlutterFire.** Ahí (solo dev) Auth habla con el emulador por REST (`EmulatorAuthRepository`), Analytics y FCM son no-op y las notificaciones locales sí funcionan. Firestore no tiene cliente en Linux: cuando exista la sincronización, necesitará una implementación REST detrás de su interfaz. `bootstrap` rechaza `qa`/`prod` en Linux con un mensaje claro. Nada fuera de `core/platform/` decide por plataforma si hay plugins: todo pasa por `firebasePluginsSupportedFlagProvider`.
+- El login REST se prueba contra el Auth emulator real (`test/emulator/`) y el flujo completo de dev con `integration_test/dev_emulator_flow_test.dart` (`flutter test integration_test/dev_emulator_flow_test.dart -d linux`). Ambos se saltan solos si los emuladores no están corriendo.
 - Analytics: eventos centralizados en **un** `AnalyticsService` con nombres tipados. Prohibido llamar `FirebaseAnalytics` desde UI.
 - Push (FCM) + locales: un servicio por responsabilidad (permisos, canales, handler de payload, programación). Canales Android definidos y nombrados; permiso `POST_NOTIFICATIONS` pedido en contexto, no al abrir.
 - Secretos y llaves **nunca** en el repo: `google-services.json` por flavor sí se versiona solo si no contiene secretos sensibles; el keystore de release **jamás**.

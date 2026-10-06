@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -21,6 +22,7 @@ class FlutterLocalNotificationsService implements LocalNotificationsService {
       channelDescription: NotificationChannels.defaultDescription,
       icon: 'ic_stat_fino',
     ),
+    linux: LinuxNotificationDetails(),
   );
 
   @override
@@ -33,9 +35,17 @@ class FlutterLocalNotificationsService implements LocalNotificationsService {
     await _plugin.initialize(
       settings: const InitializationSettings(
         android: AndroidInitializationSettings('ic_stat_fino'),
+        linux: LinuxInitializationSettings(defaultActionName: 'Abrir'),
       ),
       onDidReceiveNotificationResponse: (response) => _emit(response.payload),
     );
+    await _emitLaunchNotification();
+  }
+
+  /// The notification that started the app, if any. Android only: other
+  /// platforms do not implement it.
+  Future<void> _emitLaunchNotification() async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
     final launch = await _plugin.getNotificationAppLaunchDetails();
     if (launch?.didNotificationLaunchApp ?? false) {
       _emit(launch?.notificationResponse?.payload);
@@ -53,7 +63,9 @@ class FlutterLocalNotificationsService implements LocalNotificationsService {
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
-    return await android?.requestNotificationsPermission() ?? false;
+    // Only Android asks; everywhere else notifications are already allowed.
+    if (android == null) return true;
+    return await android.requestNotificationsPermission() ?? false;
   }
 
   @override

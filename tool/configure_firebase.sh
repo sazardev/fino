@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: tool/configure_firebase.sh <dev|qa|prod>
+# Usage: tool/configure_firebase.sh <qa|prod>
 # Generates lib/core/firebase/options/firebase_options_<flavor>.dart with the
 # FlutterFire CLI, for the Firebase project `fino-<flavor>` (Android + web).
 set -euo pipefail
@@ -8,6 +8,10 @@ source tool/src/validate_flavor.sh
 
 flavor="${1:-}"
 validate_flavor "$flavor"
+if [[ "$flavor" == "dev" ]]; then
+  echo "dev runs against the local emulators and needs no Firebase project (see tool/emulators.sh)." >&2
+  exit 64
+fi
 
 for cmd in firebase flutterfire; do
   if ! command -v "$cmd" >/dev/null 2>&1; then

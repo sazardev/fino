@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
+import '../emulators/emulator_config.dart';
 import 'flavor.dart';
 
 /// Everything that differs between dev, qa and prod.
@@ -18,6 +19,7 @@ class FlavorConfig {
     required this.verboseLogging,
     required this.analyticsEnabled,
     required this.strictConfiguration,
+    this.emulators,
   });
 
   final Flavor flavor;
@@ -34,4 +36,7 @@ class FlavorConfig {
 
   /// Refuse to start with unconfigured Firebase or Google credentials.
   final bool strictConfiguration;
+
+  /// Run against the local Firebase emulators instead of a real project.
+  final EmulatorConfig? emulators;
 }

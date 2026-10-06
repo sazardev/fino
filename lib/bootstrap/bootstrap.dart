@@ -11,18 +11,29 @@ import '../core/flavor/flavor_config.dart';
 import '../core/flavor/flavor_config_provider.dart';
 import '../core/haptics/haptics_binding.dart';
 import '../core/logging/app_logger.dart';
+import 'bootstrap_failure_app.dart';
 import 'initialize_firebase.dart';
 import 'install_error_handlers.dart';
 import 'start_deferred_services.dart';
 
 /// The one place the app starts, whatever the flavor: errors → Firebase and
 /// settings in parallel → the app → deferred services after the first frame.
+/// If any step fails, a [BootstrapFailureApp] says why.
 Future<void> bootstrap(FlavorConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
-
   final logger = AppLogger(verbose: config.verboseLogging);
   installErrorHandlers(logger);
+
+  try {
+    await _start(config, logger);
+  } on Object catch (error, stackTrace) {
+    logger.error('Startup failed', error, stackTrace);
+    runApp(BootstrapFailureApp(error: error));
+  }
+}
+
+Future<void> _start(FlavorConfig config, AppLogger logger) async {
+  usePathUrlStrategy();
 
   final (_, settings) = await (
     initializeFirebase(config, logger),

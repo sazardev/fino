@@ -55,3 +55,9 @@ app.*.map.json
 *.keystore
 .env
 .env.*
+
+# Firebase emulators
+/.firebase/
+firebase-debug.log
+ui-debug.log
+firestore-debug.log

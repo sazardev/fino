@@ -10,19 +10,24 @@ Reglas de código y proceso: [`STACK.md`](STACK.md). Reglas de diseño:
 
 ```sh
 tool/setup.sh                    # dependencias, código generado, hooks de git
-tool/configure_firebase.sh dev   # Firebase del flavor (también qa y prod)
-tool/run.sh dev                  # Android;  tool/run.sh dev --web  para web
+tool/emulators.sh                # Firebase local (Auth, Firestore); déjalo corriendo
+tool/run.sh dev --linux          # escritorio;  --web para Chrome;  sin flag, Android
 ```
 
-Sin `configure_firebase.sh` la app arranca en dev/qa, pero el inicio de sesión
-con Google no funciona (y las pantallas están detrás del login); `prod` se
-niega a arrancar.
+`dev` corre contra los emuladores (no necesita proyecto de Firebase): el botón
+"Continuar con Google" entra con una cuenta falsa. `tool/emulators.sh` necesita
+`firebase-tools` (`npm i -g firebase-tools`) y un JDK 21 o superior.
+
+Para `qa` y `prod` sí hace falta Firebase real:
+`tool/configure_firebase.sh qa` (y `prod`). Sin eso `prod` se niega a arrancar.
+Linux solo ejecuta `dev`.
 
 ## Comandos
 
 | Comando | Qué hace |
 | --- | --- |
-| `tool/run.sh <dev\|qa\|prod> [--web]` | Corre un flavor |
+| `tool/run.sh <dev\|qa\|prod> [--web\|--linux]` | Corre un flavor |
+| `tool/emulators.sh` | Levanta los emuladores de Firebase (dev) |
 | `tool/build.sh <flavor> <apk\|appbundle\|web>` | Compila un flavor |
 | `tool/gen.sh` | Regenera código (Riverpod, rutas, Drift, Freezed) |
 | `tool/check.sh` | Formato, analyzer, tamaño de archivos, tests y cobertura |

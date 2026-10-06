@@ -29,4 +29,10 @@ void main() {
     expect(devFlavorConfig.strictConfiguration, isFalse);
     expect(qaFlavorConfig.strictConfiguration, isFalse);
   });
+
+  test('only dev runs against the emulators', () {
+    expect(devFlavorConfig.emulators, isNotNull);
+    expect(qaFlavorConfig.emulators, isNull);
+    expect(prodFlavorConfig.emulators, isNull);
+  });
 }

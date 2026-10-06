@@ -1,24 +1,23 @@
-// Replaced by `tool/configure_firebase.sh dev` (FlutterFire CLI output).
+// dev runs against the Firebase emulators: the `demo-` project id needs no
+// credentials, so these values are deliberately fake.
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-import 'firebase_options_x.dart';
-
-/// Firebase options of the `fino-dev` project.
+/// Firebase options of the emulated `demo-fino-dev` project.
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform => kIsWeb ? web : android;
 
   static const web = FirebaseOptions(
-    apiKey: FirebaseOptionsX.placeholder,
-    appId: FirebaseOptionsX.placeholder,
-    messagingSenderId: FirebaseOptionsX.placeholder,
-    projectId: 'fino-dev',
+    apiKey: 'demo-api-key',
+    appId: '1:000000000000:web:0000000000000000000000',
+    messagingSenderId: '000000000000',
+    projectId: 'demo-fino-dev',
   );
 
   static const android = FirebaseOptions(
-    apiKey: FirebaseOptionsX.placeholder,
-    appId: FirebaseOptionsX.placeholder,
-    messagingSenderId: FirebaseOptionsX.placeholder,
-    projectId: 'fino-dev',
+    apiKey: 'demo-api-key',
+    appId: '1:000000000000:android:0000000000000000000000',
+    messagingSenderId: '000000000000',
+    projectId: 'demo-fino-dev',
   );
 }

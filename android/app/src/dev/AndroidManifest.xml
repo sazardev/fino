@@ -1,0 +1,4 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- dev talks to the Firebase emulators over plain HTTP (10.0.2.2). -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>
