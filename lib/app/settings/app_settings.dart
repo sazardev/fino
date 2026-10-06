@@ -30,6 +30,12 @@ class AppSettings {
         initial: UiSize.normal,
         codec: const EnumCodec(UiSize.values),
       ),
+      adaptToScreen = PersistedValue(
+        prefs: prefs,
+        key: 'adapt_to_screen',
+        initial: false,
+        codec: const BoolCodec(),
+      ),
       hapticsEnabled = PersistedValue(
         prefs: prefs,
         key: 'haptics_enabled',
@@ -40,11 +46,24 @@ class AppSettings {
   final PersistedValue<Color> accent;
   final PersistedValue<ThemeMode> themeMode;
   final PersistedValue<UiSize> uiSize;
+
+  /// Lets big screens (tablet, desktop, web) grow the interface beyond
+  /// [uiSize]. Off by default: the chosen size means the same everywhere.
+  final PersistedValue<bool> adaptToScreen;
   final PersistedValue<bool> hapticsEnabled;
 
   static Future<AppSettings> load() async =>
       AppSettings(await SharedPreferences.getInstance());
 
   /// Changes that must rebuild the whole `MaterialApp`.
-  Listenable get appearance => Listenable.merge([accent, themeMode, uiSize]);
+  Listenable get appearance =>
+      Listenable.merge([accent, themeMode, uiSize, adaptToScreen]);
+
+  /// Puts theme, accent and interface size back to their defaults.
+  Future<void> resetAppearance() => Future.wait([
+    accent.update(AccentPalette.defaultAccent),
+    themeMode.update(ThemeMode.system),
+    uiSize.update(UiSize.normal),
+    adaptToScreen.update(false),
+  ]);
 }

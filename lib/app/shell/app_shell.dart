@@ -28,7 +28,9 @@ class AppShell extends StatelessWidget {
       destinations: _destinations,
       pages: branches,
       index: navigationShell.currentIndex,
-      onSelect: navigationShell.goBranch,
+      // Every tap on the bar lands on the destination's root: a subscreen left
+      // open (Ajustes → Apariencia) must not be waiting when coming back.
+      onSelect: (i) => navigationShell.goBranch(i, initialLocation: true),
       onReselect: (i) => navigationShell.goBranch(i, initialLocation: true),
       // Forms open full screen, above the navigation, so they don't compete
       // with the keyboard.

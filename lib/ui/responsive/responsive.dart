@@ -10,8 +10,16 @@ import 'ui_size_scope.dart';
 ///
 /// Read with [Responsive.of]; it rebuilds the caller when the window size or
 /// the user's [UiSize] changes.
+///
+/// The user's [UiSize] is honoured as chosen on every screen: "S" is S on a
+/// phone, a tablet and a desktop. Only when `adaptToScreen` is on does a big
+/// screen grow the interface further, up to 1.5×.
 class Responsive {
-  factory fromSize(Size size, {UiSize uiSize = UiSize.normal}) {
+  factory fromSize(
+    Size size, {
+    UiSize uiSize = UiSize.normal,
+    bool adaptToScreen = false,
+  }) {
     final shortest = size.shortestSide;
     final FormFactor factor;
     if (shortest < watchShortestSide) {
@@ -24,8 +32,8 @@ class Responsive {
       factor = FormFactor.expanded;
     }
 
-    // Phones stay at 1.0; bigger screens grow gently up to 1.5.
-    final base = factor == FormFactor.watch
+    // Phones stay at 1.0; with [adaptToScreen], bigger screens grow gently.
+    final base = factor == FormFactor.watch || !adaptToScreen
         ? 1.0
         : (shortest / 480).clamp(1.0, 1.5);
     return Responsive._(
@@ -37,6 +45,7 @@ class Responsive {
   factory of(BuildContext context) => Responsive.fromSize(
     MediaQuery.sizeOf(context),
     uiSize: UiSizeScope.of(context),
+    adaptToScreen: UiSizeScope.adaptsToScreen(context),
   );
 
   const new _({required this.size, required this.factor, required this.scale});

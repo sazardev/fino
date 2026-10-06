@@ -30,7 +30,13 @@ class AccentPicker extends StatefulWidget {
 class _AccentPickerState extends State<AccentPicker> {
   /// The user's custom color, if the accent isn't a palette color.
   late Color? _custom = _inPalette(widget.color) ? null : widget.color;
-  late bool _customOpen = _custom != null;
+
+  /// Whether the custom swatch is the chosen one. It can hold a color that is
+  /// also in the palette (the custom picker starts from the current accent).
+  late bool _customChosen = _custom != null;
+
+  /// Whether the picker panel is unfolded. Folding it keeps the custom color.
+  late bool _customOpen = _customChosen;
 
   bool _inPalette(Color color) =>
       widget.colors.any((c) => c.toARGB32() == color.toARGB32());
@@ -38,23 +44,30 @@ class _AccentPickerState extends State<AccentPicker> {
   @override
   void didUpdateWidget(covariant AccentPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.color == widget.color) return;
-    if (_inPalette(widget.color)) {
-      _customOpen = false;
-    } else {
-      _custom = widget.color;
-      _customOpen = true;
-    }
+    if (oldWidget.color == widget.color || _inPalette(widget.color)) return;
+    _custom = widget.color;
+    _customChosen = true;
+    _customOpen = true;
   }
 
   void _pickPalette(Color color) {
-    setState(() => _customOpen = false);
+    setState(() {
+      _customChosen = false;
+      _customOpen = false;
+    });
     widget.onChanged(color);
   }
 
-  void _openCustom() {
+  /// First tap picks the custom color and unfolds the panel; tapping it again
+  /// folds the panel away without losing the color.
+  void _toggleCustom() {
+    if (_customChosen) {
+      setState(() => _customOpen = !_customOpen);
+      return;
+    }
     setState(() {
       _custom ??= widget.color;
+      _customChosen = true;
       _customOpen = true;
     });
     widget.onChanged(_custom!);
@@ -82,14 +95,14 @@ class _AccentPickerState extends State<AccentPicker> {
                 color: c,
                 size: widget.swatchSize,
                 selected:
-                    !_customOpen && c.toARGB32() == widget.color.toARGB32(),
+                    !_customChosen && c.toARGB32() == widget.color.toARGB32(),
                 onTap: () => _pickPalette(c),
               ),
             CustomAccentSwatch(
               size: widget.swatchSize,
               color: _custom,
-              selected: _customOpen,
-              onTap: _openCustom,
+              selected: _customChosen,
+              onTap: _toggleCustom,
             ),
           ],
         ),

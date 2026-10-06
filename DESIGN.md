@@ -57,7 +57,7 @@ Los destinos primarios viven en la **barra de navegación inferior**
 | Íconos | `*_rounded` dibujados con `ChubbyIcon`; el activo hace `IconPop` y háptico `select` |
 | Estado | Cada destino conserva su estado (scroll, formulario a medias) al cambiar: `IndexedStack`, no se reconstruye |
 | Transición | Fade + escala 0.96 → 1 (`AppCurves.gentle`, `AppDurations.medium`), igual que `appPageRoute` |
-| Reseleccionar el activo | Vuelve a la raíz del destino (cierra sus subpantallas). *Subir al inicio del scroll: pendiente* |
+| Tocar un destino | Siempre aterriza en su **raíz**: las subpantallas que quedaron abiertas se cierran (Ajustes → Apariencia → Inicio → Ajustes muestra Ajustes, sin botón de volver). La raíz conserva su estado (scroll, formulario). Reseleccionar el activo hace lo mismo. *Subir al inicio del scroll: pendiente* |
 | Acción primaria | **Una sola** por pantalla: FAB plano (píldora `primary`/`onPrimary`, `elevation 0`, `BouncyTap`), flotando sobre la barra, alineado al final. En rail va en su slot `leading` |
 | Subpantallas | Cada destino tiene su **propia pila de navegación** (`DestinationNavigator`): un detalle se abre *dentro* del destino y la navegación permanece visible; el gesto atrás del sistema cierra primero esa pila. Formularios de captura: pantalla completa sobre la navegación (no compiten con el teclado) |
 
@@ -118,7 +118,7 @@ nada (hay un test que lo verifica).
    Las entradas hacen pop con sobreimpulso y un pequeño giro. Las pantallas
    entran con fade + escala suave.
 4. **Personalizable al máximo.** El usuario elige: modo claro/oscuro/sistema,
-   color de acento (32 colores + selector HSV/hex propio), tamaño de UI
+   color de acento (5 colores + selector HSV/hex propio), tamaño de UI
    (4 niveles), idioma, y qué botones se muestran. Cada cambio se aplica **en
    vivo**, sin "guardar".
 5. **Sin modales.** Nada de `AlertDialog`, bottom sheets ni pickers del
@@ -187,10 +187,10 @@ Curvas estándar de apoyo, también en `AppCurves`: `select` = `easeOut`
 
 - `ColorScheme.fromSeed(seedColor: accent, brightness: …)`; el acento es **un
   `Color` único** (`Themes.accent`) persistido como `int` ARGB.
-- Paleta de 32 acentos (copiar de Enfo, **nunca reordenar los existentes**; solo
-  agregar al final): los 16 `Colors.*` Material (red … blueGrey) + rose, coral,
-  fuchsia, violet, periwinkle, royal blue, sky, aqua, emerald, pear, honey,
-  tangerine, cocoa, slate, midnight, ink. Más selector personalizado HSV + hex.
+- Paleta **corta de 5 acentos** (esmeralda —el de por defecto—, azul real,
+  violeta, rosa, mandarina) más el selector personalizado HSV + hex. Un acento
+  guardado que ya no esté en la paleta se muestra como el personalizado, así
+  que reducirla o cambiarla no rompe lo persistido.
 - Fondo de pantalla: `colorScheme.surface`. Superficies elevadas
   (tiles, cards, botones secundarios): `surfaceContainerHigh`.
 - Seleccionado = `primary` con texto `onPrimary` (subtítulos
@@ -327,8 +327,32 @@ No existe. Ver §0.1. Su lugar lo toman tres piezas pequeñas:
   háptico `confirm`. Muestra su etiqueta solo en `expanded`; en el resto,
   solo el ícono con tooltip.
 
+### Secciones contraíbles (`CollapsibleSection`)
+Tarjeta `surfaceContainer` (radio `lg`) con encabezado — `IconBadge`, título,
+**resumen del valor actual** (solo plegada, máx. 120 dp; oculto en watch) y
+chevron que gira — y cuerpo que se pliega con `AnimatedSize` (`medium`,
+`settle`).
+
+### Estilos rápidos (`PresetPicker` + `PresetTile` + `ThemePreview`)
+Looks listos (`AppearancePreset`): **tema + color** que combinan — Esmeralda,
+Océano, Medianoche, Rosé, Atardecer, Bosque. **No tocan el tamaño de UI**, que
+es personal y tiene su propio control; la sección lo dice en una línea.
+**Lista vertical** (una fila por estilo; dos columnas desde 520 dp de ancho,
+nunca rejilla en móvil). Cada fila lleva un **mini preview** del app en ese look
+y con el tamaño actual del usuario (`ThemePreview`: superficie, tarjeta con
+botón de acento y barra de navegación; el modo Sistema se parte en diagonal
+claro/oscuro), el nombre, qué hace ("Oscuro · Violeta") y un check. La fila
+seleccionada se llena con `primary`; si tema y color no coinciden con ninguno,
+la sección dice "Personalizado".
+
+### Pantalla Apariencia
+Secciones contraíbles, en este orden: **Estilo rápido** (abierta), **Color de
+acento**, **Tema**, **Tamaño de la interfaz** (cada una con su valor como
+resumen) y al final **Restablecer apariencia** (confirma en sitio). Tamaño
+explica cada opción en una línea y ofrece "Ampliar en pantallas grandes".
+
 ### Selector de color inline (`AccentPicker` + `ColorPickerPanel`)
-`Wrap` centrado de swatches (+ swatch "personalizado") → al elegir custom se
+`Wrap` centrado de 5 swatches de 44 dp (+ swatch "personalizado") → al elegir custom se
 despliega con `AnimatedSize` (`medium`, `easeOutCubic`) un panel con sliders
 de Hue/Sat/Brillo sobre pistas con gradiente y un campo hex (`#`, 6 chars,
 solo `[0-9a-fA-F]`). HSV es la fuente de verdad (RGB perdería el matiz en
@@ -386,9 +410,12 @@ entradas escalonadas con `Interval(a, b, curve: easeOutCubic)`.
 | `medium` | 600–840 | rail compacto | móvil horizontal, tablet chica |
 | `expanded` | ≥ 840 | rail extendido | tablet, desktop, web ancha; master-detail |
 
-- `scale = clamp(shortestSide / 480, 1.0, 1.5) × uiSize.multiplier`
-  (`UiSize`: small 0.9 · normal 1.0 · large 1.25 · extraLarge 1.5). Texto e
-  íconos se multiplican por `scale` en el `builder` de `MaterialApp`
+- `scale = uiSize.multiplier` (`UiSize`: small 0.9 · normal 1.0 · large 1.25 ·
+  extraLarge 1.5). **El tamaño elegido se respeta tal cual en toda pantalla**:
+  S es S en móvil, tablet y desktop. Solo si el usuario activa "Ampliar en
+  pantallas grandes" (`adaptToScreen`, apagado por defecto) se multiplica
+  además por `clamp(shortestSide / 480, 1.0, 1.5)`. Texto e íconos se
+  multiplican por `scale` en el `builder` de `MaterialApp`
   (`TextScaler.linear(systemScale × scale)` + `IconTheme.merge`).
 - Ancho de contenido: 480 (compact) / 620 (medium) / 720 (expanded) × scale,
   nunca más que la ventana. Pantallas densas pueden usar 90 % del ancho en

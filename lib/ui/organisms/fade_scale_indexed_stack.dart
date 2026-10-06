@@ -46,18 +46,17 @@ class _Page extends StatelessWidget {
         ignoring: !active,
         child: ExcludeFocus(
           excluding: !active,
-          child: TickerMode(
-            enabled: active,
-            child: AnimatedOpacity(
-              opacity: active ? 1 : 0,
+          child: AnimatedOpacity(
+            opacity: active ? 1 : 0,
+            duration: duration,
+            curve: AppCurves.select,
+            child: AnimatedScale(
+              scale: active ? 1 : 0.96,
               duration: duration,
-              curve: AppCurves.select,
-              child: AnimatedScale(
-                scale: active ? 1 : 0.96,
-                duration: duration,
-                curve: AppCurves.gentle,
-                child: child,
-              ),
+              curve: AppCurves.gentle,
+              // Inside the fade: muting tickers *above* it would freeze the
+              // leaving page's fade-out and leave it painted over the new one.
+              child: TickerMode(enabled: active, child: child),
             ),
           ),
         ),

@@ -14,9 +14,28 @@ void main() {
     expect(of(1280, 800), FormFactor.expanded);
   });
 
-  test('phones stay at scale 1, big screens grow up to 1.5', () {
-    expect(Responsive.fromSize(const Size(390, 844)).scale, 1.0);
-    expect(Responsive.fromSize(const Size(3000, 2000)).scale, 1.5);
+  test('the chosen size is honoured on every screen', () {
+    for (final size in const [
+      Size(390, 844),
+      Size(800, 1280),
+      Size(3000, 2000),
+    ]) {
+      expect(Responsive.fromSize(size).scale, 1.0, reason: '$size');
+      expect(
+        Responsive.fromSize(size, uiSize: UiSize.small).scale,
+        UiSize.small.multiplier,
+        reason: '$size',
+      );
+    }
+  });
+
+  test('adapting to the screen grows big screens up to 1.5×', () {
+    Responsive adapted(Size size, [UiSize ui = UiSize.normal]) =>
+        Responsive.fromSize(size, uiSize: ui, adaptToScreen: true);
+
+    expect(adapted(const Size(390, 844)).scale, 1.0);
+    expect(adapted(const Size(3000, 2000)).scale, 1.5);
+    expect(adapted(const Size(3000, 2000), UiSize.small).scale, 1.5 * 0.9);
   });
 
   test('the UI size multiplies the scale', () {

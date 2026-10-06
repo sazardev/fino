@@ -35,6 +35,7 @@ class FinoApp extends ConsumerWidget {
           routerConfig: ref.watch(appRouterProvider),
           builder: (context, child) => UiSizeScope(
             size: settings.uiSize.value,
+            adaptToScreen: settings.adaptToScreen.value,
             child: ResponsiveScaler(child: SplashGate(child: child!)),
           ),
         ),

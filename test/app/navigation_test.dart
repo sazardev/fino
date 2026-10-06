@@ -166,6 +166,22 @@ void main() {
     });
   });
 
+  testWidgets('leaving a destination and coming back lands on its root', (
+    tester,
+  ) async {
+    await pumpFino(tester);
+    await goTo(tester, settingsIcon);
+    await tester.tap(find.text('Apariencia'));
+    await tester.pumpAndSettle();
+
+    await goTo(tester, homeIcon);
+    await goTo(tester, settingsIcon);
+
+    expect(find.byType(SettingsPage), findsOneWidget);
+    expect(find.byType(AppearancePage), findsNothing);
+    expect(find.byTooltip('Volver'), findsNothing);
+  });
+
   group('primary action', () {
     testWidgets('opens a full-screen form above the navigation', (
       tester,

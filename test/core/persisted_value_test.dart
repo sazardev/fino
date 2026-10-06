@@ -48,8 +48,8 @@ void main() {
     expect(s.hapticsEnabled.value, isTrue);
   });
 
-  test('palette keeps its 32 colors and the default is part of it', () {
-    expect(AccentPalette.colors, hasLength(32));
+  test('palette is a short curated list and the default is part of it', () {
+    expect(AccentPalette.colors, hasLength(5));
     expect(AccentPalette.colors, contains(AccentPalette.defaultAccent));
   });
 }

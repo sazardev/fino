@@ -1,48 +1,37 @@
 import 'package:flutter/material.dart';
 
 import '../../ui/design/app_spacing.dart';
-import '../../ui/molecules/section_header.dart';
-import '../../ui/molecules/theme_mode_selector.dart';
-import '../../ui/molecules/ui_size_selector.dart';
-import '../../ui/organisms/accent_picker.dart';
-import '../../ui/responsive/ui_size.dart';
 import '../../ui/templates/settings_shell.dart';
-import '../../ui/theme/accent_palette.dart';
+import 'appearance_accent_section.dart';
+import 'appearance_presets_section.dart';
+import 'appearance_reset_row.dart';
+import 'appearance_size_section.dart';
+import 'appearance_theme_section.dart';
 import 'settings_scope.dart';
 
-/// Theme mode, accent color and interface size. Every choice applies live.
+/// Your UI, your way: ready-made looks, then each choice on its own — color,
+/// theme and size. Each section folds away and shows its value when folded;
+/// every choice applies live.
 class AppearancePage extends StatelessWidget {
   const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     final settings = SettingsScope.of(context);
+    const gap = SizedBox(height: AppSpacing.md);
 
     return SettingsShell(
       children: [
-        const SectionHeader('Tema'),
-        ValueListenableBuilder<ThemeMode>(
-          valueListenable: settings.themeMode,
-          builder: (context, mode, _) => ThemeModeSelector(
-            mode: mode,
-            onChanged: settings.themeMode.update,
-          ),
-        ),
-        const SectionHeader('Color de acento'),
-        ValueListenableBuilder<Color>(
-          valueListenable: settings.accent,
-          builder: (context, color, _) => AccentPicker(
-            colors: AccentPalette.colors,
-            color: color,
-            onChanged: settings.accent.update,
-          ),
-        ),
-        const SectionHeader('Tamaño de la interfaz'),
-        ValueListenableBuilder<UiSize>(
-          valueListenable: settings.uiSize,
-          builder: (context, size, _) =>
-              UiSizeSelector(size: size, onChanged: settings.uiSize.update),
-        ),
+        const SizedBox(height: AppSpacing.sm),
+        AppearancePresetsSection(settings: settings),
+        gap,
+        AppearanceAccentSection(settings: settings),
+        gap,
+        AppearanceThemeSection(settings: settings),
+        gap,
+        AppearanceSizeSection(settings: settings),
+        const SizedBox(height: AppSpacing.xl),
+        AppearanceResetRow(settings: settings),
         const SizedBox(height: AppSpacing.xxl),
       ],
     );
