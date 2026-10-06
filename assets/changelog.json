@@ -1,5 +1,21 @@
 [
   {
+    "version": "0.1.2",
+    "date": "2026-10-06",
+    "notes": [
+      {
+        "type": "build",
+        "scope": "release",
+        "subject": "respect local pubspec.yaml edits when releasing from a clean clone"
+      },
+      {
+        "type": "build",
+        "scope": "release",
+        "subject": "scripts that commit and release from a clean clone"
+      }
+    ]
+  },
+  {
     "version": "0.1.1",
     "date": "2026-10-06",
     "notes": [
