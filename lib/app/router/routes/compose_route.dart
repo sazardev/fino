@@ -7,5 +7,13 @@ class ComposeRoute extends GoRouteData with $ComposeRoute {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
-      AppTransitionPage(key: state.pageKey, child: const ComposePage());
+      AppTransitionPage(
+        key: state.pageKey,
+        child: ComposePage(
+          onBack: BackNavigation.to(
+            context,
+            fallback: const HomeRoute().location,
+          ),
+        ),
+      );
 }

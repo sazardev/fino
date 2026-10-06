@@ -41,7 +41,12 @@ Tres reglas que ganan sobre cualquier otra sección de este documento.
   bórralo.
 - **Volver atrás** en una pantalla secundaria: `AppIconButton`
   (`arrow_back_rounded`) flotando arriba a la izquierda sobre el contenido, o
-  el gesto/botón del sistema. Acciones de contexto (editar, compartir): íconos
+  el gesto/botón del sistema. **Lo decide la ruta, no la pantalla ni el
+  navegador:** una pantalla secundaria *siempre* lleva el botón y una raíz de
+  destino *nunca*, igual en móvil, tablet y web (nada de preguntar
+  `Navigator.canPop()` al construir: se queda desactualizado al redimensionar o
+  cambiar de destino). El botón sube un paso si hay pantalla debajo y, si no
+  (enlace directo, recarga en web, notificación), va al padre lógico de la ruta. Acciones de contexto (editar, compartir): íconos
   sueltos dentro del contenido, nunca una barra.
 
 ### 0.2 Navegación inferior
@@ -319,8 +324,9 @@ No existe. Ver §0.1. Su lugar lo toman tres piezas pequeñas:
 
 - **`FloatingBackButton`** — `AppIconButton` con flecha dentro de un círculo
   tonal (`surfaceContainerHigh`) para leerse sobre lo que haga scroll debajo.
-  `SettingsShell` lo muestra solo si hay a dónde volver y lo alinea con el
-  borde izquierdo de la columna de contenido.
+  `SettingsShell` lo muestra solo si recibe `onBack` (la ruta se lo da con
+  `BackNavigation.to`) y lo alinea con el borde izquierdo de la columna de
+  contenido.
 - **`ScreenTitle`** — título *de contenido* (`headlineSmall` w700): primer
   elemento del scroll, solo cuando aporta (§0.1).
 - **`AppFab`** — la acción primaria: píldora `primary` plana, `BouncyTap` 0.94,

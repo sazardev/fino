@@ -167,6 +167,7 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - Las notificaciones push y locales llevan un **payload de ruta** y navegan por el mismo router.
 - Guards de autenticación vía `redirect` + `refreshListenable` conectado a Riverpod. Ninguna pantalla protegida se renderiza sin sesión.
 - Transiciones **custom** (ver `DESIGN.md`) definidas una vez en `CustomTransitionPage`, no repetidas por ruta.
+- **Volver atrás lo define la ruta.** Cada ruta secundaria (`app/router/routes/`) entrega a su página un `onBack` hecho con `BackNavigation.to(context, fallback: <ruta padre>)`: sube un paso si hay pantalla debajo y, si no (deep link, recarga web, notificación), hace `go` al padre. Ninguna plantilla ni widget consulta `Navigator.canPop()` ni decide si mostrar el botón: una raíz de destino no recibe `onBack`, una secundaria siempre. Cada ruta nueva con botón de volver trae su test de enlace directo (`test/app/back_button_test.dart`).
 
 ---
 

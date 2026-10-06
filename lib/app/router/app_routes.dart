@@ -10,6 +10,7 @@ import '../home/home_page.dart';
 import '../settings/appearance_page.dart';
 import '../settings/settings_page.dart';
 import '../shell/app_shell.dart';
+import 'back_navigation.dart';
 
 part 'app_routes.g.dart';
 part 'routes/app_shell_route.dart';

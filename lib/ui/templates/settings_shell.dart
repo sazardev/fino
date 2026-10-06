@@ -10,8 +10,9 @@ import '../responsive/responsive.dart';
 
 /// Scaffold for a scrollable, sectioned screen. There is no top bar: an
 /// optional [title] is the first element of the scroll, and a secondary screen
-/// gets a floating back button. The content stays in a readable column that
-/// grows with the screen (phone → tablet → web) and tightens on watches.
+/// (one given an [onBack]) gets a floating back button. The content stays in
+/// a readable column that grows with the screen (phone → tablet → web) and
+/// tightens on watches.
 class SettingsShell extends StatelessWidget {
   const new({
     required this.children,
@@ -19,6 +20,7 @@ class SettingsShell extends StatelessWidget {
     this.title,
     this.loaded = true,
     this.wide = false,
+    this.onBack,
   });
 
   final List<Widget> children;
@@ -32,13 +34,19 @@ class SettingsShell extends StatelessWidget {
   /// Use the wider column meant for dense screens on large displays.
   final bool wide;
 
+  /// Makes this a secondary screen: shows the floating back button, which
+  /// runs this. A destination's root leaves it null. Always the route's
+  /// decision, never read from the navigator.
+  final VoidCallback? onBack;
+
   @override
   Widget build(BuildContext context) {
     final r = Responsive.of(context);
     final maxWidth = wide
         ? AppLayout.wideContentWidth(context)
         : r.contentWidth;
-    final canGoBack = Navigator.of(context).canPop();
+    final onBack = this.onBack;
+    final canGoBack = onBack != null;
     final backSize = 44 * r.scale;
 
     return Scaffold(
@@ -76,11 +84,11 @@ class SettingsShell extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (canGoBack)
+                if (onBack != null)
                   Positioned(
                     left: backLeft,
                     top: AppSpacing.sm,
-                    child: const FloatingBackButton(),
+                    child: FloatingBackButton(onPressed: onBack),
                   ),
               ],
             );

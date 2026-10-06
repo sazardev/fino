@@ -5,5 +5,13 @@ class AppearanceRoute extends GoRouteData with $AppearanceRoute {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
-      AppTransitionPage(key: state.pageKey, child: const AppearancePage());
+      AppTransitionPage(
+        key: state.pageKey,
+        child: AppearancePage(
+          onBack: BackNavigation.to(
+            context,
+            fallback: const SettingsRoute().location,
+          ),
+        ),
+      );
 }

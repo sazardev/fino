@@ -13,7 +13,10 @@ import 'settings_scope.dart';
 /// theme and size. Each section folds away and shows its value when folded;
 /// every choice applies live.
 class AppearancePage extends StatelessWidget {
-  const new({super.key});
+  const new({super.key, this.onBack});
+
+  /// Where the back button leads; set by the route.
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,7 @@ class AppearancePage extends StatelessWidget {
     const gap = SizedBox(height: AppSpacing.md);
 
     return SettingsShell(
+      onBack: onBack,
       children: [
         const SizedBox(height: AppSpacing.sm),
         AppearancePresetsSection(settings: settings),

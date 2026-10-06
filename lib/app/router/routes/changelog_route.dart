@@ -5,5 +5,13 @@ class ChangelogRoute extends GoRouteData with $ChangelogRoute {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
-      AppTransitionPage(key: state.pageKey, child: const ChangelogPage());
+      AppTransitionPage(
+        key: state.pageKey,
+        child: ChangelogPage(
+          onBack: BackNavigation.to(
+            context,
+            fallback: const SettingsRoute().location,
+          ),
+        ),
+      );
 }

@@ -5,10 +5,10 @@ import '../atoms/app_icon_button.dart';
 /// Back arrow that floats over the content of a secondary screen (there is no
 /// top bar). A tonal circle keeps it readable over whatever scrolls beneath.
 class FloatingBackButton extends StatelessWidget {
-  const new({super.key, this.onPressed});
+  const new({required this.onPressed, super.key});
 
-  /// Defaults to popping the nearest navigator.
-  final VoidCallback? onPressed;
+  /// Where back leads is the route's call, not the button's.
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class FloatingBackButton extends StatelessWidget {
       ),
       child: AppIconButton(
         tooltip: 'Volver',
-        onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+        onPressed: onPressed,
         icon: const Icon(Icons.arrow_back_rounded),
       ),
     );
