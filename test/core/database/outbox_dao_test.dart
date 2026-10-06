@@ -2,6 +2,8 @@ import 'package:drift/native.dart';
 import 'package:fino/core/database/app_database.dart';
 import 'package:fino/core/database/outbox_backoff.dart';
 import 'package:fino/core/database/outbox_operation.dart';
+import 'package:fino/core/sync/remote_marker.dart';
+import 'package:fino/core/sync/remote_write.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -65,5 +67,43 @@ void main() {
     await enqueue('a');
     await db.wipe();
     expect(await db.outboxDao.due(now.add(const Duration(days: 1))), isEmpty);
+  });
+
+  group('batches', () {
+    const writes = [
+      RemoteWrite(
+        collection: 'teams/t1/orders',
+        id: 'o1',
+        operation: OutboxOperation.create,
+        fields: {'createdAt': RemoteMarker.serverTimestamp, 'total': 100},
+      ),
+      RemoteWrite(
+        collection: 'teams/t1/debts',
+        id: 'd1',
+        operation: OutboxOperation.create,
+        fields: {'amount': 100},
+      ),
+    ];
+
+    test('an action is queued as one batch and read back in order', () async {
+      await db.outboxDao.enqueueBatch(writes, batchId: 'b1', now: now);
+      await db.outboxDao.enqueueBatch([writes.first], batchId: 'b2', now: now);
+
+      final back = await db.outboxDao.writesOfBatch('b1');
+
+      expect(back.map((w) => w.path), [
+        'teams/t1/orders/o1',
+        'teams/t1/debts/d1',
+      ]);
+      expect(back.first.fields['createdAt'], RemoteMarker.serverTimestamp);
+      expect((await db.outboxDao.batchOf('b2')).length, 1);
+      expect((await db.outboxDao.due(now)).length, 3);
+    });
+
+    test('a loose entry has no batch', () async {
+      await enqueue('a');
+
+      expect((await db.outboxDao.due(now)).single.batchId, isEmpty);
+    });
   });
 }

@@ -1,0 +1,1584 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "outbox_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "entity",
+            "getter_name": "entity",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "entity_id",
+            "getter_name": "entityId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "batch_id",
+            "getter_name": "batchId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "operation",
+            "getter_name": "operation",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<OutboxOperation>(OutboxOperation.values)",
+              "dart_type_name": "OutboxOperation"
+            }
+          },
+          {
+            "name": "payload",
+            "getter_name": "payload",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempts",
+            "getter_name": "attempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_attempt_at",
+            "getter_name": "nextAttemptAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "teams",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "admin_id",
+            "getter_name": "adminId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "invite_code",
+            "getter_name": "inviteCode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "team_members",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "user_id",
+            "getter_name": "userId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "role",
+            "getter_name": "role",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<TeamRole>(TeamRole.values)",
+              "dart_type_name": "TeamRole"
+            }
+          },
+          {
+            "name": "joined_at",
+            "getter_name": "joinedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "display_name",
+            "getter_name": "displayName",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "photo_url",
+            "getter_name": "photoUrl",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "team_id",
+          "user_id"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "payout_methods",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "user_id",
+            "getter_name": "userId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "type",
+            "getter_name": "type",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<PayoutMethodType>(PayoutMethodType.values)",
+              "dart_type_name": "PayoutMethodType"
+            }
+          },
+          {
+            "name": "number",
+            "getter_name": "number",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bank_name",
+            "getter_name": "bankName",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "holder_name",
+            "getter_name": "holderName",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "team_id",
+          "user_id"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "orders",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "creditor_id",
+            "getter_name": "creditorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "concept",
+            "getter_name": "concept",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "note",
+            "getter_name": "note",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "total_cents",
+            "getter_name": "totalCents",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "spent_at",
+            "getter_name": "spentAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "debts",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_id",
+            "getter_name": "orderId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "creditor_id",
+            "getter_name": "creditorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "debtor_id",
+            "getter_name": "debtorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_cents",
+            "getter_name": "amountCents",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<DebtStatus>(DebtStatus.values)",
+              "dart_type_name": "DebtStatus"
+            }
+          },
+          {
+            "name": "payment_id",
+            "getter_name": "paymentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "payments",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "creditor_id",
+            "getter_name": "creditorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "debtor_id",
+            "getter_name": "debtorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "debt_ids",
+            "getter_name": "debtIds",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const StringListConverter()",
+              "dart_type_name": "List<String>"
+            }
+          },
+          {
+            "name": "payout_bank_name",
+            "getter_name": "payoutBankName",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payout_last4",
+            "getter_name": "payoutLast4",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reference",
+            "getter_name": "reference",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reported_at",
+            "getter_name": "reportedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "awaiting_confirmation_reminder_sent",
+            "getter_name": "awaitingConfirmationReminderSent",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"awaiting_confirmation_reminder_sent\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"awaiting_confirmation_reminder_sent\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "ledger_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "order_id",
+            "getter_name": "orderId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "type",
+            "getter_name": "type",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<LedgerEventType>(LedgerEventType.values)",
+              "dart_type_name": "LedgerEventType"
+            }
+          },
+          {
+            "name": "actor_id",
+            "getter_name": "actorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "at",
+            "getter_name": "at",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "debt_id",
+            "getter_name": "debtId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payment_id",
+            "getter_name": "paymentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_before_cents",
+            "getter_name": "amountBeforeCents",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_after_cents",
+            "getter_name": "amountAfterCents",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "note",
+            "getter_name": "note",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "party_ids",
+            "getter_name": "partyIds",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const StringListConverter()",
+              "dart_type_name": "List<String>"
+            }
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "notice_records",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sender_id",
+            "getter_name": "senderId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recipient_ids",
+            "getter_name": "recipientIds",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const StringListConverter()",
+              "dart_type_name": "List<String>"
+            }
+          },
+          {
+            "name": "template",
+            "getter_name": "template",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<NoticeTemplate>(NoticeTemplate.values)",
+              "dart_type_name": "NoticeTemplate"
+            }
+          },
+          {
+            "name": "custom_text",
+            "getter_name": "customText",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sent_at",
+            "getter_name": "sentAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "inbox_notifications",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recipient_id",
+            "getter_name": "recipientId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<NotificationKind>(NotificationKind.values)",
+              "dart_type_name": "NotificationKind"
+            }
+          },
+          {
+            "name": "actor_id",
+            "getter_name": "actorId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "team_id",
+            "getter_name": "teamId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "target_type",
+            "getter_name": "targetType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<NotificationTargetType>(NotificationTargetType.values)",
+              "dart_type_name": "NotificationTargetType"
+            }
+          },
+          {
+            "name": "target_id",
+            "getter_name": "targetId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_cents",
+            "getter_name": "amountCents",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "concept",
+            "getter_name": "concept",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "debt_count",
+            "getter_name": "debtCount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "rejected_count",
+            "getter_name": "rejectedCount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "note",
+            "getter_name": "note",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "template_key",
+            "getter_name": "templateKey",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "read_at",
+            "getter_name": "readAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        0
+      ],
+      "type": "index",
+      "data": {
+        "on": 0,
+        "name": "outbox_next_attempt",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "next_attempt_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "references": [
+        2
+      ],
+      "type": "index",
+      "data": {
+        "on": 2,
+        "name": "team_members_user",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "user_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "references": [
+        4
+      ],
+      "type": "index",
+      "data": {
+        "on": 4,
+        "name": "orders_team",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "team_id",
+            "order_by": null
+          },
+          {
+            "column": "spent_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "debts_order",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "order_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "debts_team_status",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "team_id",
+            "order_by": null
+          },
+          {
+            "column": "status",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "debts_debtor_status",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "debtor_id",
+            "order_by": null
+          },
+          {
+            "column": "status",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "debts_creditor_status",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "creditor_id",
+            "order_by": null
+          },
+          {
+            "column": "status",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "debts_payment",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "payment_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "references": [
+        6
+      ],
+      "type": "index",
+      "data": {
+        "on": 6,
+        "name": "payments_team",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "team_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "ledger_order",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "order_id",
+            "order_by": null
+          },
+          {
+            "column": "at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "references": [
+        8
+      ],
+      "type": "index",
+      "data": {
+        "on": 8,
+        "name": "notice_records_sender",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "sender_id",
+            "order_by": null
+          },
+          {
+            "column": "team_id",
+            "order_by": null
+          },
+          {
+            "column": "sent_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        9
+      ],
+      "type": "index",
+      "data": {
+        "on": 9,
+        "name": "inbox_recipient",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "recipient_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "outbox_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"outbox_entries\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"entity\" TEXT NOT NULL, \"entity_id\" TEXT NOT NULL, \"batch_id\" TEXT NOT NULL DEFAULT '', \"operation\" TEXT NOT NULL, \"payload\" TEXT NOT NULL DEFAULT '', \"attempts\" INTEGER NOT NULL DEFAULT 0, \"next_attempt_at\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "teams",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"teams\" (\"id\" TEXT NOT NULL, \"name\" TEXT NOT NULL, \"admin_id\" TEXT NOT NULL, \"invite_code\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "team_members",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"team_members\" (\"team_id\" TEXT NOT NULL, \"user_id\" TEXT NOT NULL, \"role\" TEXT NOT NULL, \"joined_at\" INTEGER NOT NULL, \"display_name\" TEXT NOT NULL, \"photo_url\" TEXT NULL, PRIMARY KEY (\"team_id\", \"user_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "payout_methods",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"payout_methods\" (\"team_id\" TEXT NOT NULL, \"user_id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"number\" TEXT NOT NULL, \"bank_name\" TEXT NULL, \"holder_name\" TEXT NULL, PRIMARY KEY (\"team_id\", \"user_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"orders\" (\"id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"creditor_id\" TEXT NOT NULL, \"concept\" TEXT NOT NULL, \"note\" TEXT NULL, \"total_cents\" INTEGER NOT NULL, \"spent_at\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "debts",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"debts\" (\"id\" TEXT NOT NULL, \"order_id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"creditor_id\" TEXT NOT NULL, \"debtor_id\" TEXT NOT NULL, \"amount_cents\" INTEGER NOT NULL, \"status\" TEXT NOT NULL, \"payment_id\" TEXT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "payments",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"payments\" (\"id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"creditor_id\" TEXT NOT NULL, \"debtor_id\" TEXT NOT NULL, \"debt_ids\" TEXT NOT NULL, \"payout_bank_name\" TEXT NULL, \"payout_last4\" TEXT NOT NULL, \"reference\" TEXT NULL, \"reported_at\" INTEGER NOT NULL, \"awaiting_confirmation_reminder_sent\" INTEGER NOT NULL DEFAULT 0 CHECK (\"awaiting_confirmation_reminder_sent\" IN (0, 1)), PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "ledger_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"ledger_entries\" (\"id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"order_id\" TEXT NOT NULL, \"type\" TEXT NOT NULL, \"actor_id\" TEXT NOT NULL, \"at\" INTEGER NOT NULL, \"debt_id\" TEXT NULL, \"payment_id\" TEXT NULL, \"amount_before_cents\" INTEGER NULL, \"amount_after_cents\" INTEGER NULL, \"note\" TEXT NULL, \"party_ids\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "notice_records",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"notice_records\" (\"id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"sender_id\" TEXT NOT NULL, \"recipient_ids\" TEXT NOT NULL, \"template\" TEXT NULL, \"custom_text\" TEXT NULL, \"sent_at\" INTEGER NOT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "inbox_notifications",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"inbox_notifications\" (\"id\" TEXT NOT NULL, \"recipient_id\" TEXT NOT NULL, \"kind\" TEXT NOT NULL, \"actor_id\" TEXT NOT NULL, \"team_id\" TEXT NOT NULL, \"target_type\" TEXT NOT NULL, \"target_id\" TEXT NOT NULL, \"amount_cents\" INTEGER NULL, \"concept\" TEXT NULL, \"debt_count\" INTEGER NULL, \"rejected_count\" INTEGER NULL, \"note\" TEXT NULL, \"template_key\" TEXT NULL, \"created_at\" INTEGER NOT NULL, \"read_at\" INTEGER NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "outbox_next_attempt",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX outbox_next_attempt ON outbox_entries (next_attempt_at)"
+        }
+      ]
+    },
+    {
+      "name": "team_members_user",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX team_members_user ON team_members (user_id)"
+        }
+      ]
+    },
+    {
+      "name": "orders_team",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX orders_team ON orders (team_id, spent_at)"
+        }
+      ]
+    },
+    {
+      "name": "debts_order",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX debts_order ON debts (order_id)"
+        }
+      ]
+    },
+    {
+      "name": "debts_team_status",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX debts_team_status ON debts (team_id, status)"
+        }
+      ]
+    },
+    {
+      "name": "debts_debtor_status",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX debts_debtor_status ON debts (debtor_id, status)"
+        }
+      ]
+    },
+    {
+      "name": "debts_creditor_status",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX debts_creditor_status ON debts (creditor_id, status)"
+        }
+      ]
+    },
+    {
+      "name": "debts_payment",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX debts_payment ON debts (payment_id)"
+        }
+      ]
+    },
+    {
+      "name": "payments_team",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX payments_team ON payments (team_id)"
+        }
+      ]
+    },
+    {
+      "name": "ledger_order",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX ledger_order ON ledger_entries (order_id, at)"
+        }
+      ]
+    },
+    {
+      "name": "notice_records_sender",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX notice_records_sender ON notice_records (sender_id, team_id, sent_at)"
+        }
+      ]
+    },
+    {
+      "name": "inbox_recipient",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX inbox_recipient ON inbox_notifications (recipient_id, created_at)"
+        }
+      ]
+    }
+  ]
+}

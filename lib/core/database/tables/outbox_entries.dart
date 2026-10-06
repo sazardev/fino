@@ -12,6 +12,12 @@ class OutboxEntries extends Table {
   TextColumn get entity => text()();
 
   TextColumn get entityId => text()();
+
+  /// Entradas con el mismo [batchId] viajan en UN solo lote atómico de
+  /// Firestore: las reglas validan unas escrituras contra otras (`getAfter`).
+  /// Vacío = entrada suelta.
+  TextColumn get batchId => text().withDefault(const Constant(''))();
+
   TextColumn get operation => textEnum<OutboxOperation>()();
 
   /// JSON body to send; empty for deletes.
