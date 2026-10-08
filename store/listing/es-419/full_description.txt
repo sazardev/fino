@@ -1,0 +1,20 @@
+<b>Fino lleva las cuentas de tu equipo sin hojas de cálculo.</b> Alguien paga algo por todos, la app reparte la deuda y cada quien sabe exactamente cuánto debe y a quién. Cuando alguien paga, el acreedor confirma. Así nadie cobra de más ni se queda sin cobrar.
+
+<b>¿Cómo funciona?</b>
+• <b>Crea tu equipo</b> e invita con un código. Compañeros de trabajo, roomies, el viaje, lo que sea.
+• <b>Registra el pedido:</b> quién pagó, cuánto, en qué fecha y entre quiénes se reparte. También puedes fijar montos exactos por persona.
+• <b>Cada quien ve lo suyo:</b> "Debo" y "Me deben", agrupado por persona, con totales claros.
+• <b>Paga y reporta:</b> selecciona una o varias deudas, copia la cuenta de cobro del acreedor (CLABE), transfiere y toca "Ya pagué".
+• <b>El acreedor confirma</b> de golpe o deuda por deuda. Si algo no cuadra, rechaza y la deuda vuelve a quedar pendiente.
+• <b>Historial completo:</b> deudas confirmadas, canceladas y pedidos saldados, siempre consultables.
+
+<b>Pensada para la vida real</b>
+• <b>Funciona sin conexión:</b> guarda todo en tu teléfono y sincroniza cuando haya red.
+• <b>Notificaciones útiles:</b> te avisa cuando reportan tu pago o cuando falta confirmar uno.
+• <b>Privado:</b> cada equipo ve solo lo suyo. Sin publicidad.
+• <b>A tu gusto:</b> tema claro u oscuro, varios colores y tamaño de texto.
+• <b>Rápida y ligera,</b> con Material 3 y tipografía Geist.
+
+<b>Lo que Fino no es:</b> no es un banco ni procesa pagos. Las transferencias las haces tú, como siempre; Fino solo lleva la cuenta de quién debe qué y deja constancia de lo que ya se pagó y se confirmó.
+
+<b>¿Para quién?</b> Para cualquier grupo que comparta gastos: la oficina, el café de la mañana, la pizza del viernes, el viaje del puente. Si te han pagado "luego te lo paso", Fino es para ti.

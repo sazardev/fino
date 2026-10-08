@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fino — deudas y abonos entre compañeros</title>
+<meta name="description" content="Fino lleva las deudas y abonos entre compañeros de trabajo: quién debe, quién pagó y quién confirma. Sin hojas de cálculo.">
+<meta name="theme-color" content="#10B981">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7faf8;
+    --fg: #10201a;
+    --muted: #4b5f56;
+    --card: #ffffff;
+    --accent: #10b981;
+    --accent-strong: #047857;
+    --line: #dfe9e4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1512;
+      --fg: #e8f2ee;
+      --muted: #9db3aa;
+      --card: #12201b;
+      --accent: #34d399;
+      --accent-strong: #6ee7b7;
+      --line: #1f332c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header img { width: 72px; height: 72px; border-radius: 18px; }
+  h1 { font-size: 2rem; margin: 0; letter-spacing: -0.02em; }
+  h2 { font-size: 1.25rem; margin: 2.2em 0 0.6em; letter-spacing: -0.01em; }
+  h3 { font-size: 1.02rem; margin: 1.6em 0 0.4em; }
+  p, li { color: var(--fg); }
+  .lead { color: var(--muted); font-size: 1.05rem; margin: 4px 0 0; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px 22px;
+    margin: 22px 0;
+  }
+  a { color: var(--accent-strong); text-underline-offset: 2px; }
+  ul { padding-left: 1.2em; }
+  li { margin: 0.3em 0; }
+  .badge {
+    display: inline-block;
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent-strong);
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  footer { color: var(--muted); font-size: 0.9rem; margin-top: 3em; }
+  .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+  .links a {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #06281c;
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="assets/icon-192.png" alt="Icono de Fino">
+    <div>
+      <h1>Fino</h1>
+      <p class="lead">Deudas y abonos entre compañeros, claros y al día.</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <span class="badge">Android · Google Play</span>
+    <p>Fino lleva las cuentas de un equipo: quién pagó, quién debe y quién
+    confirma. Cada miembro ve lo suyo; el acreedor confirma los pagos. Sin
+    hojas de cálculo ni mensajes perdidos.</p>
+    <div class="links">
+      <a href="https://play.google.com/store/apps/details?id=com.sazarcode.fino">Ver en Google Play</a>
+      <a href="https://github.com/sazardev/fino" style="background:transparent;border:1px solid var(--line);color:var(--fg)">Código en GitHub</a>
+    </div>
+  </div>
+
+  <section id="privacy">
+    <h2>Política de privacidad</h2>
+    <p><em>Última actualización: 7 de octubre de 2026.</em></p>
+
+    <p>Fino es una aplicación para llevar deudas y abonos entre los miembros de
+    un equipo (por ejemplo, compañeros de trabajo). Esta política explica qué
+    datos personales trata la app, con qué fin y qué opciones tienes. El
+    responsable del tratamiento es <strong>Omar Flores (SazarCode)</strong>,
+    contacto <a href="mailto:cerberusprogrammer@gmail.com">cerberusprogrammer@gmail.com</a>.</p>
+
+    <h3>Qué datos trata la app</h3>
+    <ul>
+      <li><strong>Datos de tu cuenta de Google:</strong> nombre, correo
+      electrónico y foto de perfil. Se obtienen al iniciar sesión con Google y
+      sirven para identificarte ante los demás miembros de tus equipos.</li>
+      <li><strong>Datos que capturas en la app:</strong> equipos y membresías,
+      pedidos (concepto, monto y fecha), deudas, pagos reportados y
+      confirmaciones, notas de los pedidos, y los datos de tu cuenta de cobro
+      (tipo, número, banco y titular) que tú mismo escribes para que te
+      paguen.</li>
+      <li><strong>Datos técnicos:</strong> identificador de dispositivo para
+      notificaciones (Firebase Cloud Messaging) y eventos de uso agregados
+      (Firebase Analytics) para entender qué funciones se usan y corregir
+      errores. No se usa publicidad ni identificadores de publicidad.</li>
+    </ul>
+
+    <h3>Para qué se usan</h3>
+    <ul>
+      <li>Sincronizar la información entre los miembros de tus equipos: la app
+      guarda primero en tu dispositivo y luego replica los cambios a Firebase.</li>
+      <li>Mostrar tus deudas, pedidos y el historial, y enviarte notificaciones
+      cuando alguien reporta o confirma un pago.</li>
+      <li>Mantener la integridad de las cuentas del equipo (por ejemplo, evitar
+      que alguien salga dejando deudas sin resolver).</li>
+    </ul>
+
+    <h3>Dónde se guardan y con quién se comparten</h3>
+    <p>Los datos se almacenan en <strong>Google Firebase</strong> (Cloud
+    Firestore y Firebase Authentication), sobre la infraestructura de Google
+    Cloud, y en una base de datos local en tu dispositivo. La información de un
+    pedido es visible para los miembros del equipo al que pertenece. No se
+    venden datos personales ni se comparten con terceros ajenos al
+    funcionamiento de la app; Google actúa como proveedor de la infraestructura.
+    Las comunicaciones viajan cifradas (HTTPS/TLS).</p>
+
+    <h3>Cuánto tiempo se conservan</h3>
+    <p>Mientras uses la app y mientras el equipo necesite su historial. Las
+    deudas cerradas se conservan en el historial del equipo para que las cuentas
+    sigan siendo verificables. Si sales de un equipo, tu nombre y avatar
+    permanecen asociados al historial de deudas ya registradas, como se describe
+    en la propia app.</p>
+
+    <h3>Cómo eliminar tus datos</h3>
+    <p>Puedes cerrar sesión y desinstalar la app en cualquier momento; la copia
+    local se borra con la app. Para eliminar tu cuenta y tus datos personales,
+    escríbenos a
+    <a href="mailto:cerberusprogrammer@gmail.com?subject=Eliminar%20mi%20cuenta%20de%20Fino">cerberusprogrammer@gmail.com</a>
+    con el asunto «Eliminar mi cuenta de Fino» desde el mismo correo con el que
+    inicias sesión. Procesaremos la solicitud en un plazo máximo de 30 días:
+    se eliminan tu perfil, tus membresías y tus datos de contacto, y las deudas
+    históricas se conservan de forma anonimizada para que las cuentas de los
+    demás miembros sigan siendo correctas. Si tienes deudas vivas, la app (y la
+    atención por correo) te pedirá resolverlas antes de eliminar la cuenta.</p>
+
+    <h3>Menores de edad</h3>
+    <p>Fino no está dirigida a menores de 13 años y no se recopilan datos de
+    menores de forma consciente.</p>
+
+    <h3>Tus derechos</h3>
+    <p>Puedes solicitar acceso, corrección o eliminación de tus datos
+    escribiendo al correo de contacto. También puedes oponerte al tratamiento de
+    datos analíticos desinstalando la app o solicitándolo por correo.</p>
+
+    <h3>Cambios a esta política</h3>
+    <p>Si esta política cambia de forma relevante, se actualizará esta página y
+    se indicará la fecha de la última revisión.</p>
+  </section>
+
+  <footer>
+    <p>Fino · SazarCode · <a href="mailto:cerberusprogrammer@gmail.com">cerberusprogrammer@gmail.com</a></p>
+  </footer>
+</main>
+</body>
+</html>
