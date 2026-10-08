@@ -23,4 +23,19 @@ if [[ "$flavor" == "prod" ]]; then
   [[ "$target" != "web" ]] && args+=(--obfuscate --split-debug-info=build/symbols)
   args+=(--release)
 fi
-exec flutter build "$target" "${args[@]}" "$@"
+flutter build "$target" "${args[@]}" "$@"
+
+# Release builds are obfuscated, so Crashlytics needs the Dart symbols to
+# deobfuscate stack traces. Non-fatal: a missing or unauthenticated firebase
+# CLI must not break the build.
+if [[ "$flavor" == "prod" && "$target" != "web" ]]; then
+  app_id="$(jq -r \
+    '.flutter.platforms.dart["lib/core/firebase/options/firebase_options_prod.dart"].configurations.android' \
+    firebase.json)"
+  if [[ -n "$app_id" && "$app_id" != "null" ]] && command -v firebase >/dev/null 2>&1; then
+    firebase crashlytics:symbols:upload --app="$app_id" build/symbols ||
+      echo "warning: Crashlytics symbols were not uploaded." >&2
+  else
+    echo "warning: no firebase CLI or app id; Crashlytics symbols not uploaded." >&2
+  fi
+fi
