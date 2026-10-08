@@ -1,0 +1,8 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'firebase_crashlytics_provider.g.dart';
+
+@Riverpod(keepAlive: true)
+FirebaseCrashlytics firebaseCrashlytics(Ref ref) =>
+    FirebaseCrashlytics.instance;

@@ -19,6 +19,7 @@ class FlavorConfig {
     required this.verboseLogging,
     required this.analyticsEnabled,
     required this.strictConfiguration,
+    this.appCheckEnabled = false,
     this.emulators,
     this.demoSession = false,
   });
@@ -37,6 +38,9 @@ class FlavorConfig {
 
   /// Refuse to start with unconfigured Firebase or Google credentials.
   final bool strictConfiguration;
+
+  /// Activate App Check (Play Integrity on Android) before backend calls.
+  final bool appCheckEnabled;
 
   /// Run against the local Firebase emulators instead of a real project.
   final EmulatorConfig? emulators;

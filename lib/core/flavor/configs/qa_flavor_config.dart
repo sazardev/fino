@@ -12,4 +12,5 @@ final qaFlavorConfig = FlavorConfig(
   verboseLogging: true,
   analyticsEnabled: true,
   strictConfiguration: false,
+  appCheckEnabled: true,
 );

@@ -14,4 +14,5 @@ final prodFlavorConfig = FlavorConfig(
   verboseLogging: false,
   analyticsEnabled: true,
   strictConfiguration: true,
+  appCheckEnabled: true,
 );

@@ -29,7 +29,7 @@ este documento, **se detiene la tarea y se pregunta**; no se rompe la regla.
 | Estado / DI | **Riverpod** (`flutter_riverpod` + `riverpod_annotation` + `riverpod_generator`) |
 | Rutas / deep links | **go_router** |
 | Base local | **Drift** (SQLite; `drift_flutter`, WASM en web) |
-| Backend | **Firebase**: Auth (Google Sign-In), Firestore, Analytics, Cloud Messaging |
+| Backend | **Firebase**: Auth (Google Sign-In), Firestore, Analytics, Crashlytics, Performance, App Check y Cloud Messaging |
 | Notificaciones locales | `flutter_local_notifications` (+ `timezone`, que el plugin exige para programar) |
 | Tipografía | **Geist** / Geist Mono, empaquetadas como assets (nunca `google_fonts` en runtime) |
 | Modelos | `freezed` + `json_serializable` (inmutables) |
@@ -185,7 +185,7 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
 - Auth: **Google Sign-In** vía Firebase Auth. Estado de sesión como `Stream` en un provider; cierre de sesión limpia datos locales sensibles.
 - **Linux no tiene plugins FlutterFire.** Ahí (solo dev) Auth habla con el emulador por REST (`EmulatorAuthRepository`), Analytics y FCM son no-op y las notificaciones locales sí funcionan. Firestore no tiene cliente en Linux: cuando exista la sincronización, necesitará una implementación REST detrás de su interfaz. `bootstrap` rechaza `qa`/`prod` en Linux con un mensaje claro. Nada fuera de `core/platform/` decide por plataforma si hay plugins: todo pasa por `firebasePluginsSupportedFlagProvider`.
 - El login REST se prueba contra el Auth emulator real (`test/emulator/`) y el flujo completo de dev con `integration_test/dev_emulator_flow_test.dart` (`flutter test integration_test/dev_emulator_flow_test.dart -d linux`). Ambos se saltan solos si los emuladores no están corriendo.
-- Analytics: eventos centralizados en **un** `AnalyticsService` con nombres tipados. Prohibido llamar `FirebaseAnalytics` desde UI.
+- Observabilidad: Analytics (`AnalyticsService`, eventos tipados), Crashlytics (`CrashReporter`), Performance (`PerformanceMonitor`) y App Check (`AppCheckActivator`). Cada uno vive tras su interfaz con implementación Firebase y no-op para Linux; prohibido llamar a los SDKs desde UI. `bootstrap` enciende Crashlytics/Performance con `analyticsEnabled` y activa App Check (Play Integrity, solo Android) si `appCheckEnabled`; los errores de Flutter y asíncronos van a `CrashReporter` desde `install_error_handlers.dart`.
 - Push (FCM) + locales: un servicio por responsabilidad (permisos, canales, handler de payload, programación). Canales Android definidos y nombrados; permiso `POST_NOTIFICATIONS` pedido en contexto, no al abrir.
 - Secretos y llaves **nunca** en el repo: `google-services.json` por flavor sí se versiona solo si no contiene secretos sensibles; el keystore de release **jamás**.
 
