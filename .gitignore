@@ -50,6 +50,7 @@ app.*.map.json
 # Quality / release artifacts
 /coverage/
 /build/symbols/
+/.crashlytics/
 /android/key.properties
 *.jks
 *.keystore
