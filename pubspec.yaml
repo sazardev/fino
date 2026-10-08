@@ -1,7 +1,7 @@
 name: fino
 description: "Fino: lleva tus deudas y abonos entre compañeros de trabajo."
 publish_to: 'none'
-version: 0.1.2+3
+version: 0.1.2+4
 
 environment:
   sdk: ^3.13.4
