@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: tool/configure_firebase.sh <qa|prod>
 # Generates lib/core/firebase/options/firebase_options_<flavor>.dart with the
-# FlutterFire CLI, for the Firebase project `fino-<flavor>` (Android + web).
+# FlutterFire CLI, for the flavor's project in .firebaserc (Android + web).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source tool/src/validate_flavor.sh
@@ -26,12 +26,22 @@ case "$flavor" in
   *) package="$base_id.$flavor" ;;
 esac
 
+project="$(jq -r ".projects[\"$flavor\"]" .firebaserc)"
+
 flutterfire configure \
-  --project="fino-$flavor" \
+  --project="$project" \
   --out="lib/core/firebase/options/firebase_options_${flavor}.dart" \
   --platforms=android,web \
   --android-package-name="$package" \
   --yes
+
+# FlutterFire patches Gradle to apply the google-services plugin and writes
+# android/app/google-services.json. This project initializes Firebase from Dart
+# (see STACK.md §3), so both are unwanted: one json cannot cover the three
+# flavor packages. Undo them.
+sed -i '/START: FlutterFire Configuration/,/END: FlutterFire Configuration/d' \
+  android/app/build.gradle.kts android/settings.gradle.kts
+rm -f android/app/google-services.json
 
 cat <<MSG
 

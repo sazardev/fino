@@ -8,7 +8,7 @@ plugins {
 
 // Single source of truth for the Android identity of Fino.
 // Flavors derive from it: dev -> `<id>.dev`, qa -> `<id>.qa`, prod -> `<id>`.
-val baseApplicationId = "com.example.fino"
+val baseApplicationId = "com.sazarcode.fino"
 val androidMinSdk = 24
 val androidTargetSdk = 36
 val androidCompileSdk = 36
@@ -29,6 +29,10 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        resValues = true
     }
 
     defaultConfig {

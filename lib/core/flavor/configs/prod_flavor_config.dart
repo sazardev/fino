@@ -7,7 +7,9 @@ final prodFlavorConfig = FlavorConfig(
   flavor: Flavor.prod,
   appName: 'Fino',
   firebaseOptions: DefaultFirebaseOptions.currentPlatform,
-  googleServerClientId: 'REPLACE_ME',
+  googleServerClientId:
+      '890454769525-ub5n4d39fbc8f9fm11vg1q0flil7he7c'
+      '.apps.googleusercontent.com',
   deepLinkHost: 'fino.example',
   verboseLogging: false,
   analyticsEnabled: true,

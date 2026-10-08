@@ -8,14 +8,14 @@ part of 'debtor_candidates_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Quién más puede entrar al pedido: del equipo, que no sea yo ni tenga ya
-/// una deuda activa en él (P6).
+/// Quién más puede entrar al pedido: del equipo, que no sea quien pagó ni
+/// tenga ya una deuda activa en él (P6).
 
 @ProviderFor(debtorCandidates)
 final debtorCandidatesProvider = DebtorCandidatesFamily._();
 
-/// Quién más puede entrar al pedido: del equipo, que no sea yo ni tenga ya
-/// una deuda activa en él (P6).
+/// Quién más puede entrar al pedido: del equipo, que no sea quien pagó ni
+/// tenga ya una deuda activa en él (P6).
 
 final class DebtorCandidatesProvider
     extends
@@ -27,8 +27,8 @@ final class DebtorCandidatesProvider
     with
         $FutureModifier<List<DirectoryPerson>>,
         $FutureProvider<List<DirectoryPerson>> {
-  /// Quién más puede entrar al pedido: del equipo, que no sea yo ni tenga ya
-  /// una deuda activa en él (P6).
+  /// Quién más puede entrar al pedido: del equipo, que no sea quien pagó ni
+  /// tenga ya una deuda activa en él (P6).
   DebtorCandidatesProvider._({
     required DebtorCandidatesFamily super.from,
     required String super.argument,
@@ -73,10 +73,10 @@ final class DebtorCandidatesProvider
   }
 }
 
-String _$debtorCandidatesHash() => r'f3b6c1dbf60fb8c5750c827967390ff184955b08';
+String _$debtorCandidatesHash() => r'ce8660b184873d16dcd22df5baa0633b24535d19';
 
-/// Quién más puede entrar al pedido: del equipo, que no sea yo ni tenga ya
-/// una deuda activa en él (P6).
+/// Quién más puede entrar al pedido: del equipo, que no sea quien pagó ni
+/// tenga ya una deuda activa en él (P6).
 
 final class DebtorCandidatesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<DirectoryPerson>>, String> {
@@ -89,8 +89,8 @@ final class DebtorCandidatesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Quién más puede entrar al pedido: del equipo, que no sea yo ni tenga ya
-  /// una deuda activa en él (P6).
+  /// Quién más puede entrar al pedido: del equipo, que no sea quien pagó ni
+  /// tenga ya una deuda activa en él (P6).
 
   DebtorCandidatesProvider call(String orderId) =>
       DebtorCandidatesProvider._(argument: orderId, from: this);

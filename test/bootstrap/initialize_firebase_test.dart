@@ -1,20 +1,36 @@
 import 'package:fino/bootstrap/initialize_firebase.dart';
+import 'package:fino/core/firebase/options/firebase_options_x.dart';
 import 'package:fino/core/flavor/configs/dev_flavor_config.dart';
-import 'package:fino/core/flavor/configs/prod_flavor_config.dart';
+import 'package:fino/core/flavor/flavor.dart';
+import 'package:fino/core/flavor/flavor_config.dart';
 import 'package:fino/core/logging/app_logger.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const logger = AppLogger(verbose: false);
 
-  test('production refuses to start with unconfigured Firebase', () {
-    // Passes until `tool/configure_firebase.sh prod` has been run, then the
-    // options are real and this guard no longer applies.
-    expect(
-      () => initializeFirebase(prodFlavorConfig, logger),
-      throwsStateError,
-    );
+  // Strict (production-like) but with placeholder Firebase, so the platform
+  // checks are exercised without touching a real project.
+  const unconfigured = FlavorConfig(
+    flavor: Flavor.prod,
+    appName: 'Fino Unconfigured',
+    firebaseOptions: FirebaseOptions(
+      apiKey: FirebaseOptionsX.placeholder,
+      appId: FirebaseOptionsX.placeholder,
+      messagingSenderId: FirebaseOptionsX.placeholder,
+      projectId: 'fino-unconfigured',
+    ),
+    googleServerClientId: FirebaseOptionsX.placeholder,
+    deepLinkHost: 'fino.example',
+    verboseLogging: false,
+    analyticsEnabled: false,
+    strictConfiguration: true,
+  );
+
+  test('a strict flavor refuses to start with unconfigured Firebase', () {
+    expect(() => initializeFirebase(unconfigured, logger), throwsStateError);
   });
 
   group('on Linux, where Firebase has no plugins', () {
@@ -27,7 +43,7 @@ void main() {
 
     test('a flavor without emulators is refused, and says why', () {
       expect(
-        () => initializeFirebase(prodFlavorConfig, logger),
+        () => initializeFirebase(unconfigured, logger),
         throwsA(
           isA<UnsupportedError>().having(
             (e) => e.message,

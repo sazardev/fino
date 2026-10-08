@@ -8,5 +8,18 @@
     "firestore": { "port": 8085 },
     "ui": { "enabled": true, "port": 4000 },
     "singleProjectMode": true
+  },
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/core/firebase/options/firebase_options_prod.dart": {
+          "projectId": "fino-168ae",
+          "configurations": {
+            "android": "1:890454769525:android:e652c24661c6842b511d3c",
+            "web": "1:890454769525:web:7df69586d71f781a511d3c"
+          }
+        }
+      }
+    }
   }
 }

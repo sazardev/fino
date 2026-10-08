@@ -86,9 +86,9 @@ lib/
 | --- | --- | --- | --- |
 | `dev` | `<id>.dev` | **emuladores locales** (`demo-fino-dev`, sin proyecto real) | desarrollo diario, logs verbosos |
 | `qa` | `<id>.qa` | proyecto `fino-qa` | pruebas, datos de prueba, Crashlytics/Analytics en modo debug |
-| `prod` | `<id>` | proyecto `fino-prod` | producción, sin logs, minificado |
+| `prod` | `<id>` | proyecto `fino-168ae` | producción, sin logs, minificado |
 
-- `applicationId` final por definir; **reemplazar `com.example.fino`** antes de registrar las apps en Firebase y de cualquier release (vive en `baseApplicationId`, `android/app/build.gradle.kts`). Los hosts de App Links (`*.fino.example`) también son placeholders.
+- `applicationId` final: **`com.sazarcode.fino`** (vive en `baseApplicationId`, `android/app/build.gradle.kts`; los flavors derivan `<id>.dev` y `<id>.qa`). Los hosts de App Links (`*.fino.example`) siguen siendo placeholders.
 - Flavors **nativos**: `productFlavors` en Gradle + un entrypoint por flavor (`main_<flavor>.dart`) + `firebase_options_<flavor>.dart` por flavor.
 - Cada entrypoint solo define `Flavor` + llama `bootstrap(flavor)`. **Cero lógica** ahí.
 - `bootstrap()` es el único sitio que inicializa servicios, en orden y con manejo de errores: zona de errores → Firebase → Drift → notificaciones → `runApp(ProviderScope(...))`.
@@ -241,7 +241,7 @@ Gestor: **lefthook** (`lefthook.yml` versionado). Instalación automática con `
   - **Siempre se publica con `tool/release.sh <major|minor|patch> [--dry-run]`.** Con el árbol limpio equivale a `bump_version.dart`; con trabajo pendiente (que `bump_version.dart` no acepta) hace el release en un clon limpio de `HEAD` —pre-commit incluido— y trae commit + tag con `git reset`. Solo publica lo ya commiteado, no lo pendiente, y en tu `pubspec.yaml` solo escribe la línea `version:` (tus otros cambios ahí se respetan). Si `CHANGELOG.md` o `assets/changelog.json` tienen cambios locales, se niega antes de empezar. Ver también el commit con trabajo ajeno en §5.
   - Receta: commitea lo tuyo (§5) → `tool/release.sh patch --dry-run` para ver las notas → `tool/release.sh patch`.
 - **Íconos**: salen del logo del splash (`FinoMarkPainter` terminado) con `tool/gen_icons.sh` (necesita ImageMagick 7): Android (adaptativo + monocromo + legado + ícono de notificaciones, y color de fondo por flavor: `prod` esmeralda, `dev` mandarina, `qa` violeta), web, iOS, macOS, Windows y Linux. Los PNG generados no se editan a mano: si cambia el logo o el color de un flavor, se vuelve a correr el script.
-- Nombre visible **«Fino»** (con F mayúscula) en todas las plataformas; solo los nombres de archivo/binario (`fino`) y los identificadores (`com.example.fino`) van en minúscula.
+- Nombre visible **«Fino»** (con F mayúscula) en todas las plataformas; solo los nombres de archivo/binario (`fino`) y los identificadores (`com.sazarcode.fino`) van en minúscula.
 - Permisos de Android: solo los estrictamente necesarios.
 - Tamaño de la app vigilado: sin assets ni dependencias sin uso; `flutter build appbundle --analyze-size` en revisiones de release.
 

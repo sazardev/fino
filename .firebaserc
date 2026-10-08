@@ -3,6 +3,6 @@
     "default": "demo-fino-dev",
     "dev": "demo-fino-dev",
     "qa": "fino-qa",
-    "prod": "fino-prod"
+    "prod": "fino-168ae"
   }
 }

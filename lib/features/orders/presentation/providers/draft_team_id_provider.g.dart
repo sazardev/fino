@@ -55,4 +55,4 @@ final class DraftTeamIdProvider
   }
 }
 
-String _$draftTeamIdHash() => r'e359044310d496f75a07ce863a23bbd95fa9bcee';
+String _$draftTeamIdHash() => r'71cd563d5e059c24ed7cc71b5966b698fd8cb686';
