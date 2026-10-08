@@ -18,6 +18,13 @@
             "android": "1:890454769525:android:e652c24661c6842b511d3c",
             "web": "1:890454769525:web:7df69586d71f781a511d3c"
           }
+        },
+        "lib/core/firebase/options/firebase_options_qa.dart": {
+          "projectId": "fino-qa",
+          "configurations": {
+            "android": "1:606338504346:android:43bb43b578d21edeeff123",
+            "web": "1:606338504346:web:8d6a8139b79b534deff123"
+          }
         }
       }
     }
