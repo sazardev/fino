@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../database/outbox_operation.dart';
+import '../initial_snapshot_tracker.dart';
 import '../remote_change.dart';
 import '../remote_change_kind.dart';
 import '../remote_document.dart';
@@ -103,17 +104,18 @@ class CloudFirestoreGateway implements RemoteGateway {
     return result;
   }
 
-  /// Sin conexión el SDK puede entregar primero una instantánea vacía "de
-  /// caché": tomarla por la inicial haría borrar todo lo local. Se espera a
-  /// una que venga del servidor.
+  /// Solo la primera instantánea **del servidor** es la inicial: con ella se
+  /// purga lo local que el servidor ya no trae. Las de caché se aplican (traen
+  /// documentos que ya están en la caché del SDK y que el servidor puede no
+  /// volver a emitir para esta consulta), pero no purgan.
   Stream<RemoteSnapshot> _watch(Query<Map<String, dynamic>> query) {
-    var first = true;
+    final tracker = InitialSnapshotTracker();
     return query
         .snapshots()
-        .where((snapshot) => !snapshot.metadata.isFromCache)
         .map((snapshot) {
-          final isInitial = first;
-          first = false;
+          final isInitial = tracker.next(
+            isFromCache: snapshot.metadata.isFromCache,
+          );
           return RemoteSnapshot([
             for (final change in snapshot.docChanges)
               RemoteChange(_kind(change.type), _document(change.doc)!),
