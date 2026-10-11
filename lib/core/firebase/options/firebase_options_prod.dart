@@ -56,6 +56,7 @@ class DefaultFirebaseOptions {
     projectId: 'fino-168ae',
     authDomain: 'fino-168ae.firebaseapp.com',
     storageBucket: 'fino-168ae.firebasestorage.app',
+    measurementId: 'G-RXGFSTT0N0',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

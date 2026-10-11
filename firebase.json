@@ -9,6 +9,24 @@
     "ui": { "enabled": true, "port": 4000 },
     "singleProjectMode": true
   },
+  "hosting": {
+    "site": "fino-sazarcode",
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }],
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/@(index.html|flutter_service_worker.js|main.dart.js|version.json)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  },
   "flutter": {
     "platforms": {
       "dart": {
